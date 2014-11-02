@@ -1,0 +1,7 @@
+# Maven target directory:
+^target/
+
+# Backup and garbage files:
+~$
+\.orig$
+\.rej$
