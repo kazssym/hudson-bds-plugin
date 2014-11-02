@@ -2,43 +2,43 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>1.565.3</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
     <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>1.532.3</version><!-- which version of Jenkins is this plugin built against? Users must have at least this Jenkins version to use this plugin. -->
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jenkins-ci.plugins</groupId>
-  <artifactId>jenkins-bds-tools</artifactId>
-  <packaging>hpi</packaging>
-  <name>RAD Studio Plugin</name>
-  <version>1.0</version>
-  <description>
-      Jenkins plug-in to manage RAD Studio tool paths.
-  </description>
-  <url><!-- TODO: Fill the actual value. --></url>
-  <issueManagement>
-      <system><!-- TODO: Fill the actual value. --></system>
-      <url><!-- TODO: Fill the actual value. --></url>
-  </issueManagement>
-  <developers>
-      <developer>
-          <name>Kaz Nishimura</name>
-          <email>kazssym@vx68k.org</email>
-      </developer>
-  </developers>
-  <licenses>
-    <license>
-      <name>GNU Affero General Public License</name>
-      <url>http://www.gnu.org/licenses/agpl.html</url>
-      <comments>Version 3 (or any later version)</comments>
-    </license>
-  </licenses>
-  <scm>
-      <connection><!-- TODO: Fill the actual value. --></connection>
-      <developerConnection><!-- TODO: Fill the actual value. --></developerConnection>
-      <url><!-- TODO: Fill the actual value. --></url>
-  </scm>
+    <artifactId>jenkins-bds-tools</artifactId>
+    <packaging>hpi</packaging>
+    <name>RAD Studio Plugin</name>
+    <version>1.0</version>
+    <description>
+        Plugin for Jenkins to manage RAD Studio tool paths.
+    </description>
+    <url>https://bitbucket.org/kazssym/jenkins-bds-tools</url>
+    <issueManagement>
+        <system>Bitbucket</system>
+        <url>https://bitbucket.org/kazssym/jenkins-bds-tools/issues</url>
+    </issueManagement>
+    <developers>
+        <developer>
+            <name>Kaz Nishimura</name>
+            <email>kazssym@vx68k.org</email>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>GNU Affero General Public License</name>
+            <url>http://www.gnu.org/licenses/agpl.html</url>
+            <comments>Version 3 (or any later version)</comments>
+        </license>
+    </licenses>
+    <scm>
+        <connection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-tools</connection>
+        <developerConnection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-tools</developerConnection>
+        <url>https://bitbucket.org/kazssym/jenkins-bds-tools</url>
+    </scm>
     <build>
         <plugins>
             <plugin>
@@ -54,17 +54,17 @@
         </plugins>
     </build>
     <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
     <properties>
         <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     </properties>
