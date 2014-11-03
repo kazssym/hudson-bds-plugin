@@ -9,17 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>jenkins-bds-tools</artifactId>
+    <artifactId>jenkins-bds-plugin</artifactId>
     <packaging>hpi</packaging>
     <name>RAD Studio Plugin</name>
     <version>1.0</version>
     <description>
         Plugin for Jenkins to manage RAD Studio tool paths.
     </description>
-    <url>https://bitbucket.org/kazssym/jenkins-bds-tools</url>
+    <url>https://bitbucket.org/kazssym/jenkins-bds-plugin</url>
     <issueManagement>
         <system>Bitbucket</system>
-        <url>https://bitbucket.org/kazssym/jenkins-bds-tools/issues</url>
+        <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/issues</url>
     </issueManagement>
     <developers>
         <developer>
@@ -35,23 +35,34 @@
         </license>
     </licenses>
     <scm>
-        <connection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-tools</connection>
-        <developerConnection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-tools</developerConnection>
-        <url>https://bitbucket.org/kazssym/jenkins-bds-tools</url>
+        <connection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
+        <developerConnection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
+        <url>https://bitbucket.org/kazssym/jenkins-bds-plugin</url>
     </scm>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.2</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
             </plugin>
-        </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <excludes>
+                        <!-- To avoid test failures on Windows, -->
+                        <exclude>InjectedTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            </plugins>
     </build>
     <repositories>
         <repository>
@@ -65,6 +76,14 @@
             <url>http://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
+    <dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>msbuild</artifactId>
+            <version>1.24</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
     <properties>
         <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     </properties>
