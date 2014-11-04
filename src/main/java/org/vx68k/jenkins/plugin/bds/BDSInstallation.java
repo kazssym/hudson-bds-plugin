@@ -70,6 +70,13 @@ public class BDSInstallation extends ToolInstallation implements
     public static class Descriptor extends ToolDescriptor<BDSInstallation> {
 
         public Descriptor() {
+            load();
+        }
+
+        @Override
+        public void setInstallations(BDSInstallation... installations) {
+            super.setInstallations(installations);
+            save();
         }
 
         /**
