@@ -18,6 +18,7 @@
 
 package org.vx68k.jenkins.plugin.bds;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import hudson.EnvVars;
@@ -26,10 +27,14 @@ import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.slaves.NodeSpecific;
+import hudson.tools.Messages;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
+import hudson.util.FormValidation;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * Lets users select RAD Studio installations in their projects.
@@ -42,22 +47,30 @@ public class BDSInstallation extends ToolInstallation implements
 
     private static final String DISPLAY_NAME = "RAD Studio";
 
+    private String commonDir;
+
     @DataBoundConstructor
-    public BDSInstallation(String name, String home,
+    public BDSInstallation(String name, String home, String commonDir,
                 List<? extends ToolProperty<?>> properties) {
         super(name, home, properties);
+        this.commonDir = commonDir;
+    }
+
+    public String getCommonDir() {
+        return commonDir;
     }
 
     @Override
     public BDSInstallation forNode(Node node, TaskListener log) throws
             IOException, InterruptedException {
         return new BDSInstallation(getName(), translateFor(node, log),
-                getProperties().toList());
+                getCommonDir(), getProperties().toList());
     }
 
     @Override
     public BDSInstallation forEnvironment(EnvVars environment) {
         return new BDSInstallation(getName(), environment.expand(getHome()),
+                environment.expand(getCommonDir()),
                 getProperties().toList()); // TODO: Expand other variables.
     }
 
@@ -71,6 +84,19 @@ public class BDSInstallation extends ToolInstallation implements
 
         public Descriptor() {
             load();
+        }
+
+        public FormValidation doCheckCommonDir(@QueryParameter File value) {
+            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+
+            if (value.getPath().isEmpty()) {
+                return FormValidation.ok();
+            }
+            if (value.isDirectory()) {
+                return FormValidation.ok();
+            }
+            return FormValidation.warning(
+                    Messages.ToolDescriptor_NotADirectory(value));
         }
 
         @Override
