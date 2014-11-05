@@ -33,8 +33,10 @@ import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import hudson.util.FormValidation;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Lets users select RAD Studio installations in their projects.
@@ -149,9 +151,13 @@ public class BDSInstallation extends ToolInstallation implements
         }
 
         @Override
-        public void setInstallations(BDSInstallation... installations) {
-            super.setInstallations(installations);
-            save();
+        public boolean configure(StaplerRequest req, JSONObject json) throws
+                FormException {
+            boolean ready = super.configure(req, json);
+            if (ready) {
+                save();
+            }
+            return ready;
         }
 
         /**
