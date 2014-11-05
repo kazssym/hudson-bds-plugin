@@ -49,10 +49,10 @@ public class BDSInstallation extends ToolInstallation implements
 
     private static final String DISPLAY_NAME = "RAD Studio";
 
-    private String commonDir;
-    private String include;
-    private String boostRoot;
-    private String boostRoot64;
+    private final String commonDir;
+    private final String include;
+    private final String boostRoot;
+    private final String boostRoot64;
 
     @DataBoundConstructor
     public BDSInstallation(String name, String home, String commonDir,
