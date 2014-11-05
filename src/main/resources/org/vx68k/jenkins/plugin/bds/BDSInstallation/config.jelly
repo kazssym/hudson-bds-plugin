@@ -26,4 +26,15 @@
     <f:entry title="BDSCOMMONDIR" field="commonDir">
         <f:textbox/>
     </f:entry>
+    <f:advanced>
+        <f:entry title="BDSINCLUDE" field="include">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="CG_BOOST_ROOT" field="boostRoot">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="CG_64_BOOST_ROOT" field="boostRoot64">
+            <f:textbox/>
+        </f:entry>
+    </f:advanced>
 </j:jelly>

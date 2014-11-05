@@ -48,16 +48,35 @@ public class BDSInstallation extends ToolInstallation implements
     private static final String DISPLAY_NAME = "RAD Studio";
 
     private String commonDir;
+    private String include;
+    private String boostRoot;
+    private String boostRoot64;
 
     @DataBoundConstructor
     public BDSInstallation(String name, String home, String commonDir,
-                List<? extends ToolProperty<?>> properties) {
+            String include, String boostRoot, String boostRoot64,
+            List<? extends ToolProperty<?>> properties) {
         super(name, home, properties);
         this.commonDir = commonDir;
+        this.include = include;
+        this.boostRoot = boostRoot;
+        this.boostRoot64 = boostRoot64;
     }
 
     public String getCommonDir() {
         return commonDir;
+    }
+
+    public String getInclude() {
+        return include;
+    }
+
+    public String getBoostRoot() {
+        return boostRoot;
+    }
+
+    public String getBoostRoot64() {
+        return boostRoot64;
     }
 
     @Override
@@ -65,20 +84,27 @@ public class BDSInstallation extends ToolInstallation implements
         super.buildEnvVars(env);
         env.put("BDS", getHome());
         env.put("BDSCOMMONDIR", getCommonDir());
+        if (getInclude().isEmpty()) {
+            env.put("BDSINCLUDE", env.expand("${BDS}\\include"));
+        } else {
+            env.put("BDSINCLUDE", getInclude());
+        }
     }
 
     @Override
     public BDSInstallation forNode(Node node, TaskListener log) throws
             IOException, InterruptedException {
         return new BDSInstallation(getName(), translateFor(node, log),
-                getCommonDir(), getProperties().toList());
+                getCommonDir(), getInclude(), getBoostRoot(),
+                getBoostRoot64(), getProperties().toList());
     }
 
     @Override
     public BDSInstallation forEnvironment(EnvVars env) {
         return new BDSInstallation(getName(), env.expand(getHome()),
-                env.expand(getCommonDir()),
-                getProperties().toList()); // TODO: Expand other variables.
+                env.expand(getCommonDir()), env.expand(getInclude()),
+                env.expand(getBoostRoot()), env.expand(getBoostRoot64()),
+                getProperties().toList());
     }
 
     /**
@@ -93,7 +119,7 @@ public class BDSInstallation extends ToolInstallation implements
             load();
         }
 
-        public FormValidation doCheckCommonDir(@QueryParameter File value) {
+        protected FormValidation checkDirectory(File value) {
             Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
 
             if (value.getPath().isEmpty()) {
@@ -104,6 +130,22 @@ public class BDSInstallation extends ToolInstallation implements
             }
             return FormValidation.warning(
                     Messages.ToolDescriptor_NotADirectory(value));
+        }
+
+        public FormValidation doCheckCommonDir(@QueryParameter File value) {
+            return checkDirectory(value);
+        }
+
+        public FormValidation doCheckInclude(@QueryParameter File value) {
+            return checkDirectory(value);
+        }
+
+        public FormValidation doCheckBoostRoot(@QueryParameter File value) {
+            return checkDirectory(value);
+        }
+
+        public FormValidation doCheckBoostRoot64(@QueryParameter File value) {
+            return checkDirectory(value);
         }
 
         @Override
