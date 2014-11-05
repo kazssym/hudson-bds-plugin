@@ -61,6 +61,13 @@ public class BDSInstallation extends ToolInstallation implements
     }
 
     @Override
+    public void buildEnvVars(EnvVars env) {
+        super.buildEnvVars(env);
+        env.put("BDS", getHome());
+        env.put("BDSCOMMONDIR", getCommonDir());
+    }
+
+    @Override
     public BDSInstallation forNode(Node node, TaskListener log) throws
             IOException, InterruptedException {
         return new BDSInstallation(getName(), translateFor(node, log),
@@ -68,9 +75,9 @@ public class BDSInstallation extends ToolInstallation implements
     }
 
     @Override
-    public BDSInstallation forEnvironment(EnvVars environment) {
-        return new BDSInstallation(getName(), environment.expand(getHome()),
-                environment.expand(getCommonDir()),
+    public BDSInstallation forEnvironment(EnvVars env) {
+        return new BDSInstallation(getName(), env.expand(getHome()),
+                env.expand(getCommonDir()),
                 getProperties().toList()); // TODO: Expand other variables.
     }
 
