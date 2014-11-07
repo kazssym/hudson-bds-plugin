@@ -34,8 +34,8 @@
         </license>
     </licenses>
     <scm>
-        <connection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
-        <developerConnection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
+        <connection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
+        <developerConnection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
         <tag>release</tag>
         <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/src</url>
     </scm>
