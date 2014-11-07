@@ -64,8 +64,8 @@ public class BDSBuildWrapper extends BuildWrapper {
         DescriptorImpl descriptor;
         descriptor = (DescriptorImpl) getDescriptor();
 
-        BDSInstallation installation;
-        installation = descriptor.getInstallationByName(getInstallationName());
+        BDSInstallation installation =
+                descriptor.getInstallationByName(getInstallationName());
         if (installation == null) {
             throw new IllegalStateException("Installation not found");
         }
@@ -141,7 +141,7 @@ public class BDSBuildWrapper extends BuildWrapper {
             assert jenkins != null;
 
             return jenkins.getDescriptorByType(
-                    BDSInstallation.Descriptor.class).getInstallations();
+                    BDSInstallation.DescriptorImpl.class).getInstallations();
         }
 
         public ListBoxModel doFillInstallationNameItems() {
