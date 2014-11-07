@@ -15,7 +15,7 @@
         Plugin for Jenkins to allow users to set RAD Studio variables in their
         projects.
     </description>
-    <url>https://bitbucket.org/kazssym/jenkins-bds-plugin</url>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/RAD+Studio+Plugin</url>
     <issueManagement>
         <system>Bitbucket</system>
         <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/issues</url>
