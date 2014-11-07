@@ -47,6 +47,8 @@ import org.kohsuke.stapler.StaplerRequest;
 public class BDSInstallation extends ToolInstallation implements
         NodeSpecific<BDSInstallation>, EnvironmentSpecific<BDSInstallation> {
 
+    private static final long serialVersionUID = 1L;
+
     private static final String DISPLAY_NAME = "RAD Studio";
 
     private final String commonDir;
