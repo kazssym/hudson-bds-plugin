@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
@@ -34,8 +35,8 @@
         </license>
     </licenses>
     <scm>
-        <connection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
-        <developerConnection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
+        <connection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
+        <developerConnection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
         <tag>default</tag>
         <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/src</url>
     </scm>
