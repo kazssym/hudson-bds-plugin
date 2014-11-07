@@ -9,7 +9,7 @@
     <artifactId>bds-plugin</artifactId>
     <packaging>hpi</packaging>
     <name>RAD Studio Plugin</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <description>
         Plugin for Jenkins to allow users to set RAD Studio variables in their
         projects.
@@ -36,7 +36,7 @@
     <scm>
         <connection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
         <developerConnection>src:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
-        <tag>release</tag>
+        <tag>release/1.0</tag>
         <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/src</url>
     </scm>
     <build>
