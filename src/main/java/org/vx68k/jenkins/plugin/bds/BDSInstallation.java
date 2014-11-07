@@ -115,9 +115,10 @@ public class BDSInstallation extends ToolInstallation implements
      * @author Kaz Nishimura
      */
     @Extension
-    public static class Descriptor extends ToolDescriptor<BDSInstallation> {
+    public static class DescriptorImpl extends
+            ToolDescriptor<BDSInstallation> {
 
-        public Descriptor() {
+        public DescriptorImpl() {
             load();
         }
 
