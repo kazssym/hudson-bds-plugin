@@ -8,13 +8,14 @@
         <version>1.565.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>jenkins-bds-plugin</artifactId>
+    <groupId>org.vx68k.jenkins</groupId>
+    <artifactId>bds-plugin</artifactId>
     <packaging>hpi</packaging>
     <name>RAD Studio Plugin</name>
     <version>1.0</version>
     <description>
-        Plugin for Jenkins to manage RAD Studio tool paths.
+        Plugin for Jenkins to allow users to set RAD Studio variables in their
+        projects.
     </description>
     <url>https://bitbucket.org/kazssym/jenkins-bds-plugin</url>
     <issueManagement>
@@ -23,6 +24,7 @@
     </issueManagement>
     <developers>
         <developer>
+            <id>kazssym</id>
             <name>Kaz Nishimura</name>
             <email>kazssym@vx68k.org</email>
         </developer>
@@ -76,6 +78,7 @@
             <url>http://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
+    <!--
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -84,6 +87,7 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+    -->
     <properties>
         <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     </properties>
