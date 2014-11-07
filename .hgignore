@@ -1,6 +1,9 @@
 # Maven target directory:
 ^target/
 
+# NetBeans local files:
+^nb-
+
 # Backup and garbage files:
 ~$
 \.orig$
