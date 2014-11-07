@@ -39,7 +39,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Lets users select RAD Studio installations in their projects.
+ * Manages RAD Studio installations for {@link BDSBuildWrapper}.
  *
  * @author Kaz Nishimura
  * @since 1.0
@@ -56,6 +56,17 @@ public class BDSInstallation extends ToolInstallation implements
     private final String boostRoot;
     private final String boostRoot64;
 
+    /**
+     * Constructs this object with properties.
+     *
+     * @param name installation name
+     * @param home home directory (value of <code>BDS</code>)
+     * @param commonDir value of <code>BDSCOMMONDIR</code>
+     * @param include value of <code>BDSINCLUDE</code>
+     * @param boostRoot value of <code>CG_BOOST_ROOT</code>
+     * @param boostRoot64 value of <code>CG_64_BOOST_ROOT</code>
+     * @param properties properties for {@link ToolInstallation}
+     */
     @DataBoundConstructor
     public BDSInstallation(String name, String home, String commonDir,
             String include, String boostRoot, String boostRoot64,
@@ -67,18 +78,38 @@ public class BDSInstallation extends ToolInstallation implements
         this.boostRoot64 = boostRoot64;
     }
 
+    /**
+     * Returns the value of <code>BDSCOMMONDIR</code>
+     *
+     * @return value of <code>BDSCOMMONDIR</code>
+     */
     public String getCommonDir() {
         return commonDir;
     }
 
+    /**
+     * Returns the value of <code>BDSINCLUDE</code>
+     *
+     * @return value of <code>BDSINCLUDE</code>
+     */
     public String getInclude() {
         return include;
     }
 
+    /**
+     * Returns the value of <code>CG_BOOST_ROOT</code>
+     *
+     * @return value of <code>CG_BOOST_ROOT</code>
+     */
     public String getBoostRoot() {
         return boostRoot;
     }
 
+    /**
+     * Returns the value of <code>CG_64_BOOST_ROOT</code>
+     *
+     * @return value of <code>CG_64_BOOST_ROOT</code>
+     */
     public String getBoostRoot64() {
         return boostRoot64;
     }
@@ -95,6 +126,15 @@ public class BDSInstallation extends ToolInstallation implements
         }
     }
 
+    /**
+     * Returns a {@link NodeSpecific} version of this object.
+     *
+     * @param node a {@link Node} object
+     * @param log a {@link TaskListener} object
+     * @return {@link NodeSpecific} version of this object
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Override
     public BDSInstallation forNode(Node node, TaskListener log) throws
             IOException, InterruptedException {
@@ -103,6 +143,12 @@ public class BDSInstallation extends ToolInstallation implements
                 getBoostRoot64(), getProperties().toList());
     }
 
+    /**
+     * Returns an {@link EnvironmentSpecific} version of this object.
+     *
+     * @param env an {@link EnvVar} object
+     * @return {@link EnvironmentSpecific} version of this object
+     */
     @Override
     public BDSInstallation forEnvironment(EnvVars env) {
         return new BDSInstallation(getName(), env.expand(getHome()),
@@ -115,6 +161,7 @@ public class BDSInstallation extends ToolInstallation implements
      * Describes {@link BDSInstallation}.
      *
      * @author Kaz Nishimura
+     * @since 1.0
      */
     @Extension
     public static class DescriptorImpl extends
