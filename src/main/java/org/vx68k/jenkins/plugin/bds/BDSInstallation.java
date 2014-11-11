@@ -51,6 +51,9 @@ public class BDSInstallation extends ToolInstallation implements
 
     private static final String DISPLAY_NAME = "RAD Studio";
 
+    private static final String NOT_INSTALLATION_HOME =
+            "Not a RAD Studio installation directory.";
+
     private static final String RSVARS_FILE_NAME =
             "bin" + File.separator + "rsbars.bat";
 
@@ -211,6 +214,15 @@ public class BDSInstallation extends ToolInstallation implements
                 save();
             }
             return ready;
+        }
+
+        @Override
+        protected FormValidation checkHomeDirectory(File home) {
+            File rsvars = new File(home, RSVARS_FILE_NAME);
+            if (rsvars.isFile()) {
+                return FormValidation.ok();
+            }
+            return FormValidation.error(NOT_INSTALLATION_HOME);
         }
 
         /**
