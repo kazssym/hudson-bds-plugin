@@ -51,6 +51,9 @@ public class BDSInstallation extends ToolInstallation implements
 
     private static final String DISPLAY_NAME = "RAD Studio";
 
+    private static final String RSVARS_FILE_NAME =
+            "bin" + File.separator + "rsbars.bat";
+
     private final String commonDir;
     private final String include;
     private final String boostRoot;
