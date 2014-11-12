@@ -161,7 +161,7 @@ public class BDSInstallation extends ToolInstallation implements
      * Describes {@link BDSInstallation}.
      *
      * @author Kaz Nishimura
-     * @since 1.0
+     * @since 2.0
      */
     @Extension
     public static class BDSInstallationDescriptor extends

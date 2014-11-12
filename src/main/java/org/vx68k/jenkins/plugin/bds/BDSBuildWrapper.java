@@ -123,6 +123,7 @@ public class BDSBuildWrapper extends BuildWrapper {
      * Describes {@link BDSBuildWrapper}.
      *
      * @author Kaz Nishimura
+     * @since 2.0
      */
     @Extension
     public static class BDSBuildWrapperDescriptor extends
