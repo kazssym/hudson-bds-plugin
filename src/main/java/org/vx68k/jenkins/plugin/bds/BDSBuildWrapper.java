@@ -34,6 +34,7 @@ import hudson.util.ListBoxModel;
 import hudson.util.StreamTaskListener;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
  * Allows users to set RAD Studio variables in their projects.
@@ -43,7 +44,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class BDSBuildWrapper extends BuildWrapper {
 
-    private static final String DISPLAY_NAME = "Set RAD Studio variables";
+    private static final String DISPLAY_NAME =
+            Messages.BDSBuildWrapper_DISPLAY_NAME();
 
     private final String installationName;
 
