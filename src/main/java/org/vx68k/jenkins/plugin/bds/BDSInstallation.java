@@ -166,7 +166,9 @@ public class BDSInstallation extends ToolInstallation implements
         }
 
         protected FormValidation checkDirectory(File value) {
-            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins jenkins = Jenkins.getInstance();
+            assert jenkins != null;
+            jenkins.checkPermission(Jenkins.ADMINISTER);
 
             if (value.getPath().isEmpty()) {
                 return FormValidation.ok();
