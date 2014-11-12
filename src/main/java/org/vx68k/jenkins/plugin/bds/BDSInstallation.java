@@ -164,10 +164,10 @@ public class BDSInstallation extends ToolInstallation implements
      * @since 1.0
      */
     @Extension
-    public static class DescriptorImpl extends
+    public static class BDSInstallationDescriptor extends
             ToolDescriptor<BDSInstallation> {
 
-        public DescriptorImpl() {
+        public BDSInstallationDescriptor() {
             load();
         }
 

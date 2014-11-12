@@ -34,6 +34,7 @@ import hudson.util.ListBoxModel;
 import hudson.util.StreamTaskListener;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
@@ -139,11 +140,9 @@ public class BDSBuildWrapper extends BuildWrapper {
         }
 
         public BDSInstallation[] getInstallations() {
-            Jenkins jenkins = Jenkins.getInstance();
-            assert jenkins != null;
-
-            return jenkins.getDescriptorByType(
-                    BDSInstallation.DescriptorImpl.class).getInstallations();
+            Jenkins app = Jenkins.getInstance();
+            return app.getDescriptorByType(BDSInstallationDescriptor.class)
+                    .getInstallations();
         }
 
         public ListBoxModel doFillInstallationNameItems() {
