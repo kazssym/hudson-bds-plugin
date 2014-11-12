@@ -120,18 +120,6 @@ public class BDSInstallation extends ToolInstallation implements
         return boostRoot64;
     }
 
-    @Override
-    public void buildEnvVars(EnvVars env) {
-        super.buildEnvVars(env);
-        env.put("BDS", getHome());
-        env.put("BDSCOMMONDIR", getCommonDir());
-        if (getInclude().isEmpty()) {
-            env.put("BDSINCLUDE", env.expand("${BDS}\\include"));
-        } else {
-            env.put("BDSINCLUDE", getInclude());
-        }
-    }
-
     /**
      * Returns a {@link NodeSpecific} version of this object.
      *
