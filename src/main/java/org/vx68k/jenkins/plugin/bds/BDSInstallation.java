@@ -56,7 +56,7 @@ public class BDSInstallation extends ToolInstallation implements
             "Not a RAD Studio installation directory.";
 
     private static final String BIN_DIRECTORY_NAME = "bin";
-    private static final String BATCH_FILE_NAME = "rsbars.bat";
+    private static final String BATCH_FILE_NAME = "rsvars.bat";
 
     private final String commonDir;
     private final String include;
