@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
@@ -54,8 +55,8 @@ public class BDSInstallation extends ToolInstallation implements
     private static final String NOT_INSTALLATION_DIRECTORY =
             "Not a RAD Studio installation directory.";
 
-    private static final String INITIALIZATION_FILE_NAME =
-            "bin" + File.separator + "rsbars.bat";
+    private static final String BIN_DIRECTORY_NAME = "bin";
+    private static final String BATCH_FILE_NAME = "rsbars.bat";
 
     private final String commonDir;
     private final String include;
@@ -165,6 +166,11 @@ public class BDSInstallation extends ToolInstallation implements
             load();
         }
 
+        public FilePath getBatchFile(FilePath home) {
+            FilePath bin = new FilePath(home, BIN_DIRECTORY_NAME);
+            return new FilePath(bin, BATCH_FILE_NAME);
+        }
+
         protected FormValidation checkDirectory(File value) {
             Jenkins app = Jenkins.getInstance();
             app.checkPermission(Jenkins.ADMINISTER);
@@ -207,11 +213,12 @@ public class BDSInstallation extends ToolInstallation implements
 
         @Override
         protected FormValidation checkHomeDirectory(File home) {
-            File rsvars = new File(home, INITIALIZATION_FILE_NAME);
-            if (!rsvars.isFile()) {
+            File bin = new File(home, BIN_DIRECTORY_NAME);
+            File batch = new File(bin, BATCH_FILE_NAME);
+            if (!batch.isFile()) {
                 return FormValidation.error(NOT_INSTALLATION_DIRECTORY);
             }
-            return FormValidation.ok();
+            return super.checkHomeDirectory(home);
         }
 
         /**
