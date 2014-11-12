@@ -24,12 +24,13 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
-import hudson.model.Descriptor;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildWrapper;
+import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.ListBoxModel;
 import hudson.util.StreamTaskListener;
 import jenkins.model.Jenkins;
@@ -64,8 +65,8 @@ public class BDSBuildWrapper extends BuildWrapper {
             Map<String, String> variables) {
         super.makeBuildVariables(build, variables);
 
-        DescriptorImpl descriptor;
-        descriptor = (DescriptorImpl) getDescriptor();
+        BDSBuildWrapperDescriptor descriptor =
+                (BDSBuildWrapperDescriptor) getDescriptor();
 
         BDSInstallation installation =
                 descriptor.getInstallationByName(getInstallationName());
@@ -124,9 +125,10 @@ public class BDSBuildWrapper extends BuildWrapper {
      * @author Kaz Nishimura
      */
     @Extension
-    public static class DescriptorImpl extends Descriptor<BuildWrapper> {
+    public static class BDSBuildWrapperDescriptor extends
+            BuildWrapperDescriptor {
 
-        public DescriptorImpl() {
+        public BDSBuildWrapperDescriptor() {
             super(BDSBuildWrapper.class);
         }
 
@@ -152,6 +154,11 @@ public class BDSBuildWrapper extends BuildWrapper {
                 items.add(i.getName(), i.getName());
             }
             return items;
+        }
+
+        @Override
+        public boolean isApplicable(AbstractProject<?, ?> project) {
+            return true;
         }
 
         /**
