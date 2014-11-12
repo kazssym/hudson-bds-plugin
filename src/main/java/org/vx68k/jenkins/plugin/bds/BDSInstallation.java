@@ -51,6 +51,12 @@ public class BDSInstallation extends ToolInstallation implements
 
     private static final String DISPLAY_NAME = "RAD Studio";
 
+    private static final String NOT_INSTALLATION_DIRECTORY =
+            "Not a RAD Studio installation directory.";
+
+    private static final String INITIALIZATION_FILE_NAME =
+            "bin" + File.separator + "rsbars.bat";
+
     private final String commonDir;
     private final String include;
     private final String boostRoot;
@@ -112,18 +118,6 @@ public class BDSInstallation extends ToolInstallation implements
      */
     public String getBoostRoot64() {
         return boostRoot64;
-    }
-
-    @Override
-    public void buildEnvVars(EnvVars env) {
-        super.buildEnvVars(env);
-        env.put("BDS", getHome());
-        env.put("BDSCOMMONDIR", getCommonDir());
-        if (getInclude().isEmpty()) {
-            env.put("BDSINCLUDE", env.expand("${BDS}\\include"));
-        } else {
-            env.put("BDSINCLUDE", getInclude());
-        }
     }
 
     /**
@@ -209,6 +203,15 @@ public class BDSInstallation extends ToolInstallation implements
                 save();
             }
             return ready;
+        }
+
+        @Override
+        protected FormValidation checkHomeDirectory(File home) {
+            File rsvars = new File(home, INITIALIZATION_FILE_NAME);
+            if (!rsvars.isFile()) {
+                return FormValidation.error(NOT_INSTALLATION_DIRECTORY);
+            }
+            return FormValidation.ok();
         }
 
         /**
