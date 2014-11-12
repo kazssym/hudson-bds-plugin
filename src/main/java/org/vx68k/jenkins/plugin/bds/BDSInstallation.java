@@ -171,6 +171,22 @@ public class BDSInstallation extends ToolInstallation implements
             return new FilePath(bin, BATCH_FILE_NAME);
         }
 
+        /**
+         * Finds a {@link BDSInstallation} object by its name.
+         * If there is nothing found, it returns <code>null</code>.
+         *
+         * @param name name of a installation to find
+         * @return a {@link BDSInstallation} object, or <code>null</code>
+         */
+        public BDSInstallation getInstallation(String name) {
+            for (BDSInstallation i : getInstallations()) {
+                if (i.getName().equals(name)) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
         protected FormValidation checkDirectory(File value) {
             Jenkins app = Jenkins.getInstance();
             app.checkPermission(Jenkins.ADMINISTER);
