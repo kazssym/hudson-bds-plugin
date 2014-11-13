@@ -63,51 +63,117 @@ public class BDSBuilder extends Builder {
     private final String installationName;
     private final String projectFile;
 
+    /**
+     * Constructs this object with properties..
+     *
+     * @param projectFile name of a MSBuild project file
+     * @param switches MSBuild switches
+     * @param installationName name of a RAD Studio installation
+     */
     @DataBoundConstructor
     public BDSBuilder(String installationName, String projectFile) {
         this.installationName = installationName;
         this.projectFile = projectFile;
     }
 
+    /**
+     * Returns the name of the RAD Studio installation.
+     *
+     * @return name of the RAD Studio installation
+     */
     public String getInstallationName() {
         return installationName;
     }
 
+    /**
+     * Reads the RAD Studio configuration from a command-line initialization
+     * batch file.
+     *
+     * @param batch RAD Studio initialization file
+     * @param environment build environment
+     * @param launcher a {@link Launcher} object
+     * @param listener a {@link BuildListener} object
+     * @return map of environment variables
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public String getProjectFile() {
         return projectFile;
     }
 
-    protected Map<String, String> extractVariables(InputStream stream,
-            BuildListener listener) throws IOException {
-        Map<String, String> variables =
+    protected Map<String, String> readConfiguration(FilePath batch,
+            EnvVars environment, Launcher launcher, BuildListener listener)
+            throws InterruptedException, IOException {
+        Map<String, String> env;
+        if (batch.isRemote()) {
+            String cmd = environment.get("COMSPEC");
+            if (cmd == null) {
+                listener.error("COMSPEC is not set: "
+                        + "this node is probably not Windows.");
+                return null;
+            }
+
+            Launcher.ProcStarter remoteStarter = launcher.launch();
+            remoteStarter.readStdout();
+            remoteStarter.stdout(listener.getLogger());
+            remoteStarter.cmds(cmd, "/c", "type", batch.getRemote());
+
+            Proc remote = remoteStarter.start();
+            env = BDSBuilder.this.readConfiguration(remote.getStdout());
+
+            int status = remote.join();
+            if (status != 0) {
+                // Any error messages must already be printed.
+                return null;
+            }
+        } else {
+            env = BDSBuilder.this.readConfiguration(batch.read());
+        }
+        return env;
+    }
+
+    /**
+     * Read the RAD Studio configuration from an input stream.
+     *
+     * @param stream input stream of a command-line initialization file
+     * @return map of environment variables
+     * @throws IOException
+     */
+    protected Map<String, String> readConfiguration(InputStream stream)
+            throws IOException {
+        Map<String, String> env =
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(stream));
         try {
             String line;
-            line = reader.readLine();
-            while (line != null) {
+            while ((line = reader.readLine()) != null) {
                 Matcher setCommand = SET_COMMAND_PATTERN.matcher(line);
                 if (setCommand.matches()) {
                     String key = setCommand.group(1);
                     String value = setCommand.group(2);
-                    if (key.startsWith("BDS") ||
-                            key.startsWith("Framework") ||
-                            key.endsWith("_BOOST_ROOT")) {
-                        variables.put(key, value);
+                    if (key.startsWith("BDS") || key.startsWith("CG_") ||
+                            key.startsWith("Framework")) {
+                        env.put(key, value);
                     }
-                } else if (!line.isEmpty()) {
-                    listener.getLogger()
-                            .format("Not a set command: %s\n", line);
                 }
-                line = reader.readLine();
             }
         } finally {
             reader.close();
         }
-        return variables;
+        return env;
     }
 
+    /**
+     * Performs a RAD Studio build.
+     *
+     * @param build an {@link AxstractBuild} object
+     * @param launcher a {@link Launcher} object
+     * @param listener a {@link BuildListener} object
+     * @return true if this object did not detect a failure.
+     * @throws InterruptedException
+     * @throws IOException
+     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
             BuildListener listener) throws InterruptedException, IOException {
@@ -124,46 +190,27 @@ public class BDSBuilder extends Builder {
         Node node = Computer.currentComputer().getNode();
         bds = bds.forNode(node, listener);
 
-        EnvVars env = build.getEnvironment(listener);
-        bds = bds.forEnvironment(env);
+        EnvVars environment = build.getEnvironment(listener);
+        bds = bds.forEnvironment(environment);
 
         if (bds.getHome().isEmpty()) {
             listener.error("Installation home is not specified.");
             return false;
         }
 
-        Map<String, String> variables;
         FilePath home = new FilePath(launcher.getChannel(), bds.getHome());
         FilePath batch = descriptor.getInstallationDescriptor()
                 .getBatchFile(home);
-        if (batch.isRemote()) {
-            String cmd = env.get("COMSPEC");
-            if (cmd == null) {
-                listener.error("COMSPEC is not set: "
-                        + "this node is probably not Windows.");
-                return false;
-            }
-
-            Launcher.ProcStarter remoteStarter = launcher.launch();
-            remoteStarter.readStdout();
-            remoteStarter.stdout(listener.getLogger());
-            remoteStarter.cmds(cmd, "/c", "type", batch.getRemote());
-
-            Proc remote = remoteStarter.start();
-            variables = extractVariables(remote.getStdout(), listener);
-
-            int status = remote.join();
-            if (status != 0) {
-                // Any error message must already be printed.
-                return false;
-            }
-        } else {
-            variables = extractVariables(batch.read(), listener);
+        Map<String, String> env = readConfiguration(batch, environment,
+                launcher, listener);
+        if (env == null) {
+            // Any error messages must already be printed.
+            return false;
         }
 
         // TODO: remove this test code.
-        for (String key : variables.keySet()) {
-            listener.getLogger().format("%s=%s\n", key, variables.get(key));
+        for (String key : env.keySet()) {
+            listener.getLogger().format("%s=%s\n", key, env.get(key));
         }
 
         // TODO: launch MSBuild.
