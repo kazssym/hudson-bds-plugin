@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
@@ -50,6 +51,12 @@ public class BDSInstallation extends ToolInstallation implements
     private static final long serialVersionUID = 1L;
 
     private static final String DISPLAY_NAME = "RAD Studio";
+
+    private static final String NOT_INSTALLATION_DIRECTORY =
+            "Not a RAD Studio installation directory.";
+
+    private static final String BIN_DIRECTORY_NAME = "bin";
+    private static final String BATCH_FILE_NAME = "rsvars.bat";
 
     private final String commonDir;
     private final String include;
@@ -114,18 +121,6 @@ public class BDSInstallation extends ToolInstallation implements
         return boostRoot64;
     }
 
-    @Override
-    public void buildEnvVars(EnvVars env) {
-        super.buildEnvVars(env);
-        env.put("BDS", getHome());
-        env.put("BDSCOMMONDIR", getCommonDir());
-        if (getInclude().isEmpty()) {
-            env.put("BDSINCLUDE", env.expand("${BDS}\\include"));
-        } else {
-            env.put("BDSINCLUDE", getInclude());
-        }
-    }
-
     /**
      * Returns a {@link NodeSpecific} version of this object.
      *
@@ -171,6 +166,27 @@ public class BDSInstallation extends ToolInstallation implements
             load();
         }
 
+        public FilePath getBatchFile(FilePath home) {
+            FilePath bin = new FilePath(home, BIN_DIRECTORY_NAME);
+            return new FilePath(bin, BATCH_FILE_NAME);
+        }
+
+        /**
+         * Finds a {@link BDSInstallation} object by its name.
+         * If there is nothing found, it returns <code>null</code>.
+         *
+         * @param name name of a installation to find
+         * @return a {@link BDSInstallation} object, or <code>null</code>
+         */
+        public BDSInstallation getInstallation(String name) {
+            for (BDSInstallation i : getInstallations()) {
+                if (i.getName().equals(name)) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
         protected FormValidation checkDirectory(File value) {
             Jenkins app = Jenkins.getInstance();
             app.checkPermission(Jenkins.ADMINISTER);
@@ -209,6 +225,16 @@ public class BDSInstallation extends ToolInstallation implements
                 save();
             }
             return ready;
+        }
+
+        @Override
+        protected FormValidation checkHomeDirectory(File home) {
+            File bin = new File(home, BIN_DIRECTORY_NAME);
+            File batch = new File(bin, BATCH_FILE_NAME);
+            if (!batch.isFile()) {
+                return FormValidation.error(NOT_INSTALLATION_DIRECTORY);
+            }
+            return super.checkHomeDirectory(home);
         }
 
         /**
