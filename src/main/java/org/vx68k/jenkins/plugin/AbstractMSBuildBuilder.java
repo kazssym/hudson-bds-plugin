@@ -18,7 +18,15 @@
 
 package org.vx68k.jenkins.plugin;
 
+import java.io.IOException;
+import java.util.Map;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.Proc;
+import hudson.model.AbstractBuild;
+import hudson.model.TaskListener;
 import hudson.tasks.Builder;
+import hudson.util.ArgumentListBuilder;
 
 /**
  * Builds a MSBuild project.
@@ -44,5 +52,29 @@ public abstract class AbstractMSBuildBuilder extends Builder {
 
     public String getSwitches() {
         return switches;
+    }
+
+    protected boolean build(AbstractBuild<?, ?> build, Launcher launcher,
+            FilePath framworkHome, Map<String, String> env,
+            TaskListener listener) throws InterruptedException, IOException {
+        FilePath msbuild = new FilePath(framworkHome, MSBUILD_COMMAND_NAME);
+
+        Launcher.ProcStarter msbuildStarter = launcher.launch();
+        msbuildStarter.stdout(listener.getLogger());
+        msbuildStarter.stderr(listener.getLogger());
+        msbuildStarter.envs(env);
+        msbuildStarter.pwd(build.getWorkspace());
+
+        ArgumentListBuilder args = new ArgumentListBuilder(
+                msbuild.getRemote());
+        args.addTokenized(getSwitches());
+        if (!getProjectFile().isEmpty()) {
+            args.add(getProjectFile());
+        }
+        msbuildStarter.cmds(args.toList());
+
+        Proc msbuildProc = msbuildStarter.start();
+        // Any error messages must already be printed.
+        return msbuildProc.join() == 0;
     }
 }

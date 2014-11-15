@@ -53,8 +53,6 @@ import org.vx68k.jenkins.plugin.bds.resources.Messages;
  */
 public class BDSBuilder extends AbstractMSBuildBuilder {
 
-    private static final String DISPLAY_NAME = "Build a RAD Stduio project";
-
     private static final Pattern SET_COMMAND_PATTERN =
             Pattern.compile("\\s*@?set\\s+([^=]+)=(.*)",
                     Pattern.CASE_INSENSITIVE);
@@ -203,14 +201,14 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
             return false;
         }
 
-        // TODO: remove this test code.
-        for (String key : env.keySet()) {
-            listener.getLogger().format("%s=%s\n", key, env.get(key));
-        }
+//        // TODO: remove this test code.
+//        for (String key : env.keySet()) {
+//            listener.getLogger().format("%s=%s\n", key, env.get(key));
+//        }
 
-        // TODO: launch MSBuild.
-
-        return true;
+        FilePath framworkHome = new FilePath(launcher.getChannel(),
+                env.get("FrameworkDir"));
+        return build(build, launcher, framworkHome, env, listener);
     }
 
     /**
@@ -255,7 +253,7 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
          */
         @Override
         public String getDisplayName() {
-            return DISPLAY_NAME;
+            return Messages.getBuilderDisplayName();
         }
     }
 }
