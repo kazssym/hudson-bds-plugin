@@ -28,15 +28,12 @@ import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.slaves.NodeSpecific;
-import hudson.tools.Messages;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import hudson.util.FormValidation;
-import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -48,7 +45,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class BDSInstallation extends ToolInstallation implements
         NodeSpecific<BDSInstallation>, EnvironmentSpecific<BDSInstallation> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private static final String DISPLAY_NAME = "RAD Studio";
 
@@ -58,67 +55,17 @@ public class BDSInstallation extends ToolInstallation implements
     private static final String BIN_DIRECTORY_NAME = "bin";
     private static final String BATCH_FILE_NAME = "rsvars.bat";
 
-    private final String commonDir;
-    private final String include;
-    private final String boostRoot;
-    private final String boostRoot64;
-
     /**
-     * Constructs this object with properties.
+     * Constructs this object with property values.
      *
      * @param name installation name
-     * @param home home directory (value of <code>BDS</code>)
-     * @param commonDir value of <code>BDSCOMMONDIR</code>
-     * @param include value of <code>BDSINCLUDE</code>
-     * @param boostRoot value of <code>CG_BOOST_ROOT</code>
-     * @param boostRoot64 value of <code>CG_64_BOOST_ROOT</code>
+     * @param home installation home directory (the value of <code>BDS</code>)
      * @param properties properties for {@link ToolInstallation}
      */
     @DataBoundConstructor
-    public BDSInstallation(String name, String home, String commonDir,
-            String include, String boostRoot, String boostRoot64,
+    public BDSInstallation(String name, String home,
             List<? extends ToolProperty<?>> properties) {
         super(name, home, properties);
-        this.commonDir = commonDir;
-        this.include = include;
-        this.boostRoot = boostRoot;
-        this.boostRoot64 = boostRoot64;
-    }
-
-    /**
-     * Returns the value of <code>BDSCOMMONDIR</code>
-     *
-     * @return value of <code>BDSCOMMONDIR</code>
-     */
-    public String getCommonDir() {
-        return commonDir;
-    }
-
-    /**
-     * Returns the value of <code>BDSINCLUDE</code>
-     *
-     * @return value of <code>BDSINCLUDE</code>
-     */
-    public String getInclude() {
-        return include;
-    }
-
-    /**
-     * Returns the value of <code>CG_BOOST_ROOT</code>
-     *
-     * @return value of <code>CG_BOOST_ROOT</code>
-     */
-    public String getBoostRoot() {
-        return boostRoot;
-    }
-
-    /**
-     * Returns the value of <code>CG_64_BOOST_ROOT</code>
-     *
-     * @return value of <code>CG_64_BOOST_ROOT</code>
-     */
-    public String getBoostRoot64() {
-        return boostRoot64;
     }
 
     /**
@@ -134,8 +81,7 @@ public class BDSInstallation extends ToolInstallation implements
     public BDSInstallation forNode(Node node, TaskListener log) throws
             IOException, InterruptedException {
         return new BDSInstallation(getName(), translateFor(node, log),
-                getCommonDir(), getInclude(), getBoostRoot(),
-                getBoostRoot64(), getProperties().toList());
+                getProperties().toList());
     }
 
     /**
@@ -147,8 +93,6 @@ public class BDSInstallation extends ToolInstallation implements
     @Override
     public BDSInstallation forEnvironment(EnvVars env) {
         return new BDSInstallation(getName(), env.expand(getHome()),
-                env.expand(getCommonDir()), env.expand(getInclude()),
-                env.expand(getBoostRoot()), env.expand(getBoostRoot64()),
                 getProperties().toList());
     }
 
@@ -187,39 +131,9 @@ public class BDSInstallation extends ToolInstallation implements
             return null;
         }
 
-        protected FormValidation checkDirectory(File value) {
-            Jenkins app = Jenkins.getInstance();
-            app.checkPermission(Jenkins.ADMINISTER);
-
-            if (value.getPath().isEmpty()) {
-                return FormValidation.ok();
-            }
-            if (value.isDirectory()) {
-                return FormValidation.ok();
-            }
-            return FormValidation.warning(
-                    Messages.ToolDescriptor_NotADirectory(value));
-        }
-
-        public FormValidation doCheckCommonDir(@QueryParameter File value) {
-            return checkDirectory(value);
-        }
-
-        public FormValidation doCheckInclude(@QueryParameter File value) {
-            return checkDirectory(value);
-        }
-
-        public FormValidation doCheckBoostRoot(@QueryParameter File value) {
-            return checkDirectory(value);
-        }
-
-        public FormValidation doCheckBoostRoot64(@QueryParameter File value) {
-            return checkDirectory(value);
-        }
-
         @Override
-        public boolean configure(StaplerRequest req, JSONObject json) throws
-                FormException {
+        public boolean configure(StaplerRequest req, JSONObject json)
+                throws FormException {
             boolean ready = super.configure(req, json);
             if (ready) {
                 save();
