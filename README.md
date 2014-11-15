@@ -1,11 +1,14 @@
 # READ ME
 
-This directory contains the source code for a plugin for [Jenkins][] to let
-users select [RAD Studio][] versions in their build projects.
+This directory contains the source code for RAD Studio Plugin for [Jenkins][]
+which allows users build [RAD Studio][] projects or project groups as build
+steps in their Jenkins projects.
 
-Although RAD Studio (Delphi and C++Builder) projects can be build with much
-famous [MSBuild Plugin][], users must set up version-specific environment
-variables by hand.
+Although RAD Studio projects can be built with more famous [MSBuild Plugin][],
+users must set version-specific environment variables by hand or by calling
+a batch file in each Jenkins project.
+This plugin will help users build (and test) their RAD Studio projects or
+project groups without such tricks.
 
 [Jenkins]: <http://jenkins-ci.org/>
 [RAD Studio]: <http://www.embarcadero.com/products/rad-studio>

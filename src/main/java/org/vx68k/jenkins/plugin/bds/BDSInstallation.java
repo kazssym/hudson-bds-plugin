@@ -40,7 +40,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Manages RAD Studio installations for {@link BDSBuildWrapper}.
+ * Configures RAD Studio installations for {@link BDSBuilder}.
  *
  * @author Kaz Nishimura
  * @since 1.0

@@ -212,7 +212,7 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
     }
 
     /**
-     * Describes {@link BDSBuildWrapper}.
+     * Describes {@link BDSBuilder}.
      *
      * @author Kaz Nishimura
      * @since 2.0
