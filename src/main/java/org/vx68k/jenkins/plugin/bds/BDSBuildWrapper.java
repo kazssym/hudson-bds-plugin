@@ -43,7 +43,9 @@ import org.vx68k.jenkins.plugin.bds.resources.Messages;
  *
  * @author Kaz Nishimura
  * @since 1.0
+ * @deprecated As of version 2.0, {@link BDSBuilder} should be used instead.
  */
+@Deprecated
 public class BDSBuildWrapper extends BuildWrapper {
 
     private static final String DISPLAY_NAME =
@@ -125,6 +127,7 @@ public class BDSBuildWrapper extends BuildWrapper {
      * @author Kaz Nishimura
      * @since 2.0
      */
+    @Deprecated
     @Extension
     public static class BDSBuildWrapperDescriptor extends
             BuildWrapperDescriptor {
