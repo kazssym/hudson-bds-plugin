@@ -41,6 +41,7 @@ import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.vx68k.jenkins.plugin.AbstractMSBuildBuilder;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
@@ -50,18 +51,15 @@ import org.vx68k.jenkins.plugin.bds.resources.Messages;
  * @author Kaz Nishimura
  * @since 2.0
  */
-public class BDSBuilder extends Builder {
+public class BDSBuilder extends AbstractMSBuildBuilder {
 
     private static final String DISPLAY_NAME = "Build a RAD Stduio project";
-
-    private static final String MSBUILD_COMMAND_NAME = "MSBuild.exe";
 
     private static final Pattern SET_COMMAND_PATTERN =
             Pattern.compile("\\s*@?set\\s+([^=]+)=(.*)",
                     Pattern.CASE_INSENSITIVE);
 
     private final String installationName;
-    private final String projectFile;
 
     /**
      * Constructs this object with properties..
@@ -71,9 +69,10 @@ public class BDSBuilder extends Builder {
      * @param installationName name of a RAD Studio installation
      */
     @DataBoundConstructor
-    public BDSBuilder(String installationName, String projectFile) {
+    public BDSBuilder(String projectFile, String switches,
+            String installationName) {
+        super(projectFile, switches);
         this.installationName = installationName;
-        this.projectFile = projectFile;
     }
 
     /**
@@ -97,10 +96,6 @@ public class BDSBuilder extends Builder {
      * @throws InterruptedException
      * @throws IOException
      */
-    public String getProjectFile() {
-        return projectFile;
-    }
-
     protected Map<String, String> readConfiguration(FilePath batch,
             EnvVars environment, Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
