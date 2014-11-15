@@ -5,7 +5,6 @@
         <version>1.565.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.vx68k.jenkins</groupId>
     <artifactId>bds-plugin</artifactId>
     <packaging>hpi</packaging>
     <name>RAD Studio Plugin</name>
