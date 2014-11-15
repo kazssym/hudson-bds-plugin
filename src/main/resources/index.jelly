@@ -2,5 +2,5 @@
   This view is used to render the installed plugins page.
 -->
 <div>
-  This plugin allows users to set RAD Studio variables in their projects.
+    This plugin allows users to set RAD Studio variables in their projects.
 </div>

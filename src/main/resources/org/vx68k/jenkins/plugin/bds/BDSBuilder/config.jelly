@@ -21,4 +21,10 @@
     <f:entry title="RAD Studio" field="installationName">
         <f:select/>
     </f:entry>
+    <f:entry title="${%Project file}" field="projectFile">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%Switches}" field="switches">
+        <f:expandableTextbox/>
+    </f:entry>
 </j:jelly>

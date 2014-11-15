@@ -24,16 +24,19 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
-import hudson.model.Descriptor;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildWrapper;
+import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.ListBoxModel;
 import hudson.util.StreamTaskListener;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
+import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
  * Allows users to set RAD Studio variables in their projects.
@@ -43,7 +46,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class BDSBuildWrapper extends BuildWrapper {
 
-    private static final String DISPLAY_NAME = "Set RAD Studio variables";
+    private static final String DISPLAY_NAME =
+            Messages.BDSBuildWrapper_DISPLAY_NAME();
 
     private final String installationName;
 
@@ -61,8 +65,8 @@ public class BDSBuildWrapper extends BuildWrapper {
             Map<String, String> variables) {
         super.makeBuildVariables(build, variables);
 
-        DescriptorImpl descriptor;
-        descriptor = (DescriptorImpl) getDescriptor();
+        BDSBuildWrapperDescriptor descriptor =
+                (BDSBuildWrapperDescriptor) getDescriptor();
 
         BDSInstallation installation =
                 descriptor.getInstallationByName(getInstallationName());
@@ -119,11 +123,13 @@ public class BDSBuildWrapper extends BuildWrapper {
      * Describes {@link BDSBuildWrapper}.
      *
      * @author Kaz Nishimura
+     * @since 2.0
      */
     @Extension
-    public static class DescriptorImpl extends Descriptor<BuildWrapper> {
+    public static class BDSBuildWrapperDescriptor extends
+            BuildWrapperDescriptor {
 
-        public DescriptorImpl() {
+        public BDSBuildWrapperDescriptor() {
             super(BDSBuildWrapper.class);
         }
 
@@ -137,11 +143,9 @@ public class BDSBuildWrapper extends BuildWrapper {
         }
 
         public BDSInstallation[] getInstallations() {
-            Jenkins jenkins = Jenkins.getInstance();
-            assert jenkins != null;
-
-            return jenkins.getDescriptorByType(
-                    BDSInstallation.DescriptorImpl.class).getInstallations();
+            Jenkins app = Jenkins.getInstance();
+            return app.getDescriptorByType(BDSInstallationDescriptor.class)
+                    .getInstallations();
         }
 
         public ListBoxModel doFillInstallationNameItems() {
@@ -151,6 +155,11 @@ public class BDSBuildWrapper extends BuildWrapper {
                 items.add(i.getName(), i.getName());
             }
             return items;
+        }
+
+        @Override
+        public boolean isApplicable(AbstractProject<?, ?> project) {
+            return true;
         }
 
         /**

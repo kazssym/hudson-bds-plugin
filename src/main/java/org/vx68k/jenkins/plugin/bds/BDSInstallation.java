@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
@@ -39,7 +40,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Lets users select RAD Studio installations in their projects.
+ * Manages RAD Studio installations for {@link BDSBuildWrapper}.
  *
  * @author Kaz Nishimura
  * @since 1.0
@@ -47,13 +48,32 @@ import org.kohsuke.stapler.StaplerRequest;
 public class BDSInstallation extends ToolInstallation implements
         NodeSpecific<BDSInstallation>, EnvironmentSpecific<BDSInstallation> {
 
+    private static final long serialVersionUID = 1L;
+
     private static final String DISPLAY_NAME = "RAD Studio";
+
+    private static final String NOT_INSTALLATION_DIRECTORY =
+            "Not a RAD Studio installation directory.";
+
+    private static final String BIN_DIRECTORY_NAME = "bin";
+    private static final String BATCH_FILE_NAME = "rsvars.bat";
 
     private final String commonDir;
     private final String include;
     private final String boostRoot;
     private final String boostRoot64;
 
+    /**
+     * Constructs this object with properties.
+     *
+     * @param name installation name
+     * @param home home directory (value of <code>BDS</code>)
+     * @param commonDir value of <code>BDSCOMMONDIR</code>
+     * @param include value of <code>BDSINCLUDE</code>
+     * @param boostRoot value of <code>CG_BOOST_ROOT</code>
+     * @param boostRoot64 value of <code>CG_64_BOOST_ROOT</code>
+     * @param properties properties for {@link ToolInstallation}
+     */
     @DataBoundConstructor
     public BDSInstallation(String name, String home, String commonDir,
             String include, String boostRoot, String boostRoot64,
@@ -65,34 +85,51 @@ public class BDSInstallation extends ToolInstallation implements
         this.boostRoot64 = boostRoot64;
     }
 
+    /**
+     * Returns the value of <code>BDSCOMMONDIR</code>
+     *
+     * @return value of <code>BDSCOMMONDIR</code>
+     */
     public String getCommonDir() {
         return commonDir;
     }
 
+    /**
+     * Returns the value of <code>BDSINCLUDE</code>
+     *
+     * @return value of <code>BDSINCLUDE</code>
+     */
     public String getInclude() {
         return include;
     }
 
+    /**
+     * Returns the value of <code>CG_BOOST_ROOT</code>
+     *
+     * @return value of <code>CG_BOOST_ROOT</code>
+     */
     public String getBoostRoot() {
         return boostRoot;
     }
 
+    /**
+     * Returns the value of <code>CG_64_BOOST_ROOT</code>
+     *
+     * @return value of <code>CG_64_BOOST_ROOT</code>
+     */
     public String getBoostRoot64() {
         return boostRoot64;
     }
 
-    @Override
-    public void buildEnvVars(EnvVars env) {
-        super.buildEnvVars(env);
-        env.put("BDS", getHome());
-        env.put("BDSCOMMONDIR", getCommonDir());
-        if (getInclude().isEmpty()) {
-            env.put("BDSINCLUDE", env.expand("${BDS}\\include"));
-        } else {
-            env.put("BDSINCLUDE", getInclude());
-        }
-    }
-
+    /**
+     * Returns a {@link NodeSpecific} version of this object.
+     *
+     * @param node a {@link Node} object
+     * @param log a {@link TaskListener} object
+     * @return {@link NodeSpecific} version of this object
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Override
     public BDSInstallation forNode(Node node, TaskListener log) throws
             IOException, InterruptedException {
@@ -101,6 +138,12 @@ public class BDSInstallation extends ToolInstallation implements
                 getBoostRoot64(), getProperties().toList());
     }
 
+    /**
+     * Returns an {@link EnvironmentSpecific} version of this object.
+     *
+     * @param env an {@link EnvVar} object
+     * @return {@link EnvironmentSpecific} version of this object
+     */
     @Override
     public BDSInstallation forEnvironment(EnvVars env) {
         return new BDSInstallation(getName(), env.expand(getHome()),
@@ -113,17 +156,40 @@ public class BDSInstallation extends ToolInstallation implements
      * Describes {@link BDSInstallation}.
      *
      * @author Kaz Nishimura
+     * @since 2.0
      */
     @Extension
-    public static class DescriptorImpl extends
+    public static class BDSInstallationDescriptor extends
             ToolDescriptor<BDSInstallation> {
 
-        public DescriptorImpl() {
+        public BDSInstallationDescriptor() {
             load();
         }
 
+        public FilePath getBatchFile(FilePath home) {
+            FilePath bin = new FilePath(home, BIN_DIRECTORY_NAME);
+            return new FilePath(bin, BATCH_FILE_NAME);
+        }
+
+        /**
+         * Finds a {@link BDSInstallation} object by its name.
+         * If there is nothing found, it returns <code>null</code>.
+         *
+         * @param name name of a installation to find
+         * @return a {@link BDSInstallation} object, or <code>null</code>
+         */
+        public BDSInstallation getInstallation(String name) {
+            for (BDSInstallation i : getInstallations()) {
+                if (i.getName().equals(name)) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
         protected FormValidation checkDirectory(File value) {
-            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins app = Jenkins.getInstance();
+            app.checkPermission(Jenkins.ADMINISTER);
 
             if (value.getPath().isEmpty()) {
                 return FormValidation.ok();
@@ -159,6 +225,16 @@ public class BDSInstallation extends ToolInstallation implements
                 save();
             }
             return ready;
+        }
+
+        @Override
+        protected FormValidation checkHomeDirectory(File home) {
+            File bin = new File(home, BIN_DIRECTORY_NAME);
+            File batch = new File(bin, BATCH_FILE_NAME);
+            if (!batch.isFile()) {
+                return FormValidation.error(NOT_INSTALLATION_DIRECTORY);
+            }
+            return super.checkHomeDirectory(home);
         }
 
         /**
