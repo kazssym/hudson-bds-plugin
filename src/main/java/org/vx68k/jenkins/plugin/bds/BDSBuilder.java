@@ -201,14 +201,14 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
             return false;
         }
 
-        // TODO: remove this test code.
-        for (String key : env.keySet()) {
-            listener.getLogger().format("%s=%s\n", key, env.get(key));
-        }
+//        // TODO: remove this test code.
+//        for (String key : env.keySet()) {
+//            listener.getLogger().format("%s=%s\n", key, env.get(key));
+//        }
 
-        // TODO: launch MSBuild.
-
-        return true;
+        FilePath framworkHome = new FilePath(launcher.getChannel(),
+                env.get("FrameworkDir"));
+        return build(build, launcher, framworkHome, env, listener);
     }
 
     /**
