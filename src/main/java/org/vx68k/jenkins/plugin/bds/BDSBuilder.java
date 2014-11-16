@@ -200,15 +200,12 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
             // Any error messages must already be printed.
             return false;
         }
+        environment.putAll(env);
 
-//        // TODO: remove this test code.
-//        for (String key : env.keySet()) {
-//            listener.getLogger().format("%s=%s\n", key, env.get(key));
-//        }
-
+        // RAD Stduio sets FrameworkDir with FrameworkVersion appended.
         FilePath framworkHome = new FilePath(launcher.getChannel(),
-                env.get("FrameworkDir"));
-        return build(build, launcher, framworkHome, env, listener);
+                environment.get("FrameworkDir"));
+        return build(build, launcher, listener, framworkHome, environment);
     }
 
     /**
