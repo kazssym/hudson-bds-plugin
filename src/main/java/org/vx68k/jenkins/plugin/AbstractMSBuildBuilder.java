@@ -20,6 +20,8 @@ package org.vx68k.jenkins.plugin;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.StringTokenizer;
+import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Proc;
@@ -57,6 +59,7 @@ public abstract class AbstractMSBuildBuilder extends Builder {
     protected boolean build(AbstractBuild<?, ?> build, Launcher launcher,
             FilePath framworkHome, Map<String, String> env,
             TaskListener listener) throws InterruptedException, IOException {
+        EnvVars environment = build.getEnvironment(listener);
         FilePath msbuild = new FilePath(framworkHome, MSBUILD_COMMAND_NAME);
 
         Launcher.ProcStarter msbuildStarter = launcher.launch();
@@ -67,9 +70,12 @@ public abstract class AbstractMSBuildBuilder extends Builder {
 
         ArgumentListBuilder args = new ArgumentListBuilder(
                 msbuild.getRemote());
-        args.addTokenized(getSwitches());
+        StringTokenizer tokenizer = new StringTokenizer(getSwitches());
+        while (tokenizer.hasMoreTokens()) {
+            args.add(environment.expand(tokenizer.nextToken()));
+        }
         if (!getProjectFile().isEmpty()) {
-            args.add(getProjectFile());
+            args.add(environment.expand(getProjectFile()));
         }
         msbuildStarter.cmds(args.toList());
 
