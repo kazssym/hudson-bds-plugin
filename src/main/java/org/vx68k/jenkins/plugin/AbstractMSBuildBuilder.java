@@ -57,17 +57,15 @@ public abstract class AbstractMSBuildBuilder extends Builder {
     }
 
     protected boolean build(AbstractBuild<?, ?> build, Launcher launcher,
-            FilePath framworkHome, Map<String, String> env,
-            TaskListener listener) throws InterruptedException, IOException {
-        EnvVars environment = build.getEnvironment(listener);
-        FilePath msbuild = new FilePath(framworkHome, MSBUILD_COMMAND_NAME);
-
+            TaskListener listener, FilePath framework, EnvVars environment)
+            throws InterruptedException, IOException {
         Launcher.ProcStarter msbuildStarter = launcher.launch();
         msbuildStarter.stdout(listener.getLogger());
         msbuildStarter.stderr(listener.getLogger());
-        msbuildStarter.envs(env);
+        msbuildStarter.envs(environment);
         msbuildStarter.pwd(build.getWorkspace());
 
+        FilePath msbuild = new FilePath(framework, MSBUILD_COMMAND_NAME);
         ArgumentListBuilder args = new ArgumentListBuilder(
                 msbuild.getRemote());
         StringTokenizer tokenizer = new StringTokenizer(getSwitches());
