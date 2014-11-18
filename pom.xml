@@ -11,8 +11,8 @@
     <name>RAD Studio Plugin</name>
     <version>3.0-SNAPSHOT</version>
     <description>
-        Plugin for Jenkins to allow users to set RAD Studio variables in their
-        projects.
+        Jenkins plugin to allow users to build RAD Studio projects or project
+        groups.
     </description>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/RAD+Studio+Plugin</url>
     <issueManagement>
@@ -43,24 +43,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
@@ -82,7 +64,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
                     <locale>en_US</locale>
                 </configuration>
             </plugin>
@@ -109,16 +90,6 @@
             <url>http://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
-    <!--
-    <dependencies>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>msbuild</artifactId>
-            <version>1.24</version>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
-    -->
     <properties>
         <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     </properties>
