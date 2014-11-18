@@ -1,8 +1,8 @@
 # READ ME
 
-This directory contains the source code for RAD Studio Plugin for [Jenkins][]
-which allows users build [RAD Studio][] projects or project groups as build
-steps in their Jenkins projects.
+This directory contains the source code for [RAD Studio Plugin][] for
+[Jenkins][] which allows users to build [RAD Studio][] projects or project
+groups.
 
 Although RAD Studio projects can be built with more famous [MSBuild Plugin][],
 users must set version-specific environment variables by hand or by calling
@@ -10,6 +10,7 @@ a batch file in each Jenkins project.
 This plugin will help users build (and test) their RAD Studio projects or
 project groups without such tricks.
 
+[RAD Studio Plugin]: <https://wiki.jenkins-ci.org/display/JENKINS/RAD+Studio+Plugin>
 [Jenkins]: <http://jenkins-ci.org/>
 [RAD Studio]: <http://www.embarcadero.com/products/rad-studio>
 [MSBuild Plugin]: <https://wiki.jenkins-ci.org/display/JENKINS/MSBuild+Plugin>
