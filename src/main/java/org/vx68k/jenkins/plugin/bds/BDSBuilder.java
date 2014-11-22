@@ -173,34 +173,32 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
         BDSBuilderDescriptor descriptor =
                 (BDSBuilderDescriptor) getDescriptor();
 
-        BDSInstallation bds = descriptor.getInstallationDescriptor()
-                .getInstallation(getInstallationName());
-        if (bds == null) {
-            listener.error("Installation not found.");
+        BDSInstallation installation =
+                descriptor.getInstallation(getInstallationName());
+        if (installation == null) {
+            listener.fatalError("Installation not found."); // TODO: I18N.
             return false;
         }
 
         Node node = Computer.currentComputer().getNode();
-        bds = bds.forNode(node, listener);
+        installation = installation.forNode(node, listener);
 
         EnvVars environment = build.getEnvironment(listener);
-        bds = bds.forEnvironment(environment);
+        installation = installation.forEnvironment(environment);
 
-        if (bds.getHome().isEmpty()) {
-            listener.error("Installation home is not specified.");
+        if (installation.getHome().isEmpty()) {
+            listener.error("Home is not specified."); // TODO: I38N.
             return false;
         }
 
-        FilePath home = new FilePath(launcher.getChannel(), bds.getHome());
-        FilePath batch = descriptor.getInstallationDescriptor()
-                .getBatchFile(home);
-        Map<String, String> env = readConfiguration(batch, environment,
+        FilePath batch = installation.getBatchFile(launcher.getChannel());
+        Map<String, String> variables = readConfiguration(batch, environment,
                 launcher, listener);
-        if (env == null) {
+        if (variables == null) {
             // Any error messages must already be printed.
             return false;
         }
-        environment.putAll(env);
+        environment.putAll(variables);
 
         // RAD Stduio sets FrameworkDir with FrameworkVersion appended.
         FilePath framworkHome = new FilePath(launcher.getChannel(),
@@ -222,16 +220,40 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
             super(BDSBuilder.class);
         }
 
-        protected BDSInstallationDescriptor getInstallationDescriptor() {
-            Jenkins app = Jenkins.getInstance();
-            return app.getDescriptorByType(BDSInstallationDescriptor.class);
+        /**
+         * Returns a RAD Studio installation identified by a name.
+         *
+         * @param name name of a RAD Studio installation
+         * @return RAD Studio installation, or <code>null</code> if not found
+         * @since 3.0
+         */
+        public BDSInstallation getInstallation(String name) {
+            for (BDSInstallation i : getInstallations()) {
+                if (i.getName().equals(name)) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Returns an array of RAD Studio installations.
+         * This method uses {@link BDSInstallationDescriptor#getInstallations}
+         * to get the installations.
+         *
+         * @return array of RAD Studio installations
+         * @since 3.0
+         */
+        protected BDSInstallation[] getInstallations() {
+            Jenkins application = Jenkins.getInstance();
+            return application.getDescriptorByType(
+                    BDSInstallationDescriptor.class).getInstallations();
         }
 
         public ListBoxModel doFillInstallationNameItems() {
             ListBoxModel items = new ListBoxModel();
 
-            for (BDSInstallation i :
-                    getInstallationDescriptor().getInstallations()) {
+            for (BDSInstallation i : getInstallations()) {
                 items.add(i.getName(), i.getName());
             }
             return items;
