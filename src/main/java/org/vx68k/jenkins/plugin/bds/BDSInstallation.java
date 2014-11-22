@@ -19,11 +19,22 @@
 package org.vx68k.jenkins.plugin.bds;
 
 import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.Launcher;
+import hudson.Proc;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
@@ -58,6 +69,13 @@ public class BDSInstallation extends ToolInstallation
     private static final String BATCH_FILE_NAME = "rsvars.bat";
 
     /**
+     * Pattern to match a <code>set</code> command.
+     */
+    private static final Pattern SET_COMMAND_PATTERN =
+            Pattern.compile("\\s*@?set\\s+([^=]+)=(.*)",
+                    Pattern.CASE_INSENSITIVE);
+
+    /**
      * Constructs this object with property values.
      *
      * @param name name of this installation
@@ -77,27 +95,106 @@ public class BDSInstallation extends ToolInstallation
      * @return {@link FilePath} object for the home directory
      * @since 3.0
      */
-    public FilePath getHome(VirtualChannel channel) {
+    protected FilePath getHome(VirtualChannel channel) {
         return new FilePath(channel, getHome());
     }
 
     /**
-     * Returns a {@link FilePath} object for the batch file that initializes
-     * environment variables for a Command Prompt.
+     * Returns a {@link FilePath} object for the batch file which initializes
+     * a RAD Studio Command Prompt.
      *
      * @param channel a {@link VirtualChannel} interface for {@link FilePath}
      * @return {@link FilePath} object for the batch file
      * @since 3.0
      */
-    public FilePath getBatchFile(VirtualChannel channel) {
+    protected FilePath getBatchFile(VirtualChannel channel) {
         FilePath bin = new FilePath(getHome(channel), BIN_DIRECTORY_NAME);
         return new FilePath(bin, BATCH_FILE_NAME);
     }
 
     /**
+     * Reads the RAD Studio environment variables from the batch file which
+     * initializes a RAD Studio Command Prompt.
+     * For a remote node, a <code>type</code> command will be used to read the
+     * file content.
+     *
+     * @param build an {@link AbstractBuild} object
+     * @param launcher a {@link Launcher} object
+     * @param listener a {@link BuildListener} object
+     * @return map of the environment variables
+     * @throws InterruptedException
+     * @throws IOException
+     * @since 3.0
+     */
+    public Map<String, String> readVariables(AbstractBuild<?, ?> build,
+            Launcher launcher, BuildListener listener)
+            throws InterruptedException, IOException {
+        FilePath batchFile = getBatchFile(launcher.getChannel());
+        if (batchFile.isRemote()) {
+            String cmd = build.getEnvironment(listener).get("COMSPEC");
+            if (cmd == null) {
+                listener.error("COMSPEC is not set: "
+                        + "this node is probably not Windows.");
+                return null;
+            }
+
+            Launcher.ProcStarter readerStarter = launcher.launch();
+            readerStarter.readStdout();
+            readerStarter.stderr(listener.getLogger());
+            readerStarter.cmds(cmd, "/c", "type", batchFile.getRemote());
+
+            Proc reader = readerStarter.start();
+            Map<String, String> variables = readVariables(reader.getStdout());
+
+            int status = reader.join();
+            if (status != 0) {
+                // Any error messages must already be printed.
+                return null;
+            }
+
+            return variables;
+        }
+        return readVariables(batchFile.read());
+    }
+
+    /**
+     * Read the RAD Studio environment variables from an input stream.
+     *
+     * @param stream input stream from the batch file for initializing a RAD
+     * Studio Command Prompt
+     * @return map of the environment variables
+     * @throws IOException
+     * @since 3.0
+     */
+    protected Map<String, String> readVariables(InputStream stream)
+            throws IOException {
+        Map<String, String> variables =
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(stream));
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Matcher setCommand = SET_COMMAND_PATTERN.matcher(line);
+                if (setCommand.matches()) {
+                    String key = setCommand.group(1);
+                    String value = setCommand.group(2);
+                    if (key.startsWith("BDS") || key.startsWith("CG_") ||
+                            key.startsWith("Framework")) {
+                        variables.put(key, value);
+                    }
+                }
+            }
+        } finally {
+            reader.close();
+        }
+        return variables;
+    }
+
+    /**
      * Returns a {@link NodeSpecific} version of this object.
      *
-     * @param node node for whitch the return value is specialized.
+     * @param node node for which the return value is specialized.
      * @param listener a {@link TaskListener} object
      * @return {@link NodeSpecific} copy of this object
      * @throws IOException
