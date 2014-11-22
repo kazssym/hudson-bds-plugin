@@ -72,6 +72,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <locale>en_US</locale>
                     <links>
                         <link>http://javadoc.jenkins-ci.org/</link>
                         <link>http://stapler.kohsuke.org/apidocs/</link>
