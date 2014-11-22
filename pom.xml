@@ -26,7 +26,7 @@
     <artifactId>bds-plugin</artifactId>
     <packaging>hpi</packaging>
     <name>RAD Studio Plugin</name>
-    <version>3.0-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <description>
         Jenkins plugin to allow users to build RAD Studio projects or project
         groups.
