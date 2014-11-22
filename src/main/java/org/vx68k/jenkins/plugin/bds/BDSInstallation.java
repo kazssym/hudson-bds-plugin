@@ -27,6 +27,7 @@ import hudson.FilePath;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
+import hudson.remoting.VirtualChannel;
 import hudson.slaves.NodeSpecific;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
@@ -42,15 +43,16 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Kaz Nishimura
  * @since 1.0
  */
-public class BDSInstallation extends ToolInstallation implements
-        NodeSpecific<BDSInstallation>, EnvironmentSpecific<BDSInstallation> {
+public class BDSInstallation extends ToolInstallation
+        implements NodeSpecific<BDSInstallation>,
+        EnvironmentSpecific<BDSInstallation> {
 
     private static final long serialVersionUID = 2L;
 
     private static final String DISPLAY_NAME = "RAD Studio";
 
     private static final String NOT_INSTALLATION_DIRECTORY =
-            "Not a RAD Studio installation directory.";
+            "Not a RAD Studio installation directory."; // TODO: I18N.
 
     private static final String BIN_DIRECTORY_NAME = "bin";
     private static final String BATCH_FILE_NAME = "rsvars.bat";
@@ -58,8 +60,8 @@ public class BDSInstallation extends ToolInstallation implements
     /**
      * Constructs this object with property values.
      *
-     * @param name installation name
-     * @param home installation home directory (the value of <code>BDS</code>)
+     * @param name name of this installation
+     * @param home home directory (the value of <code>BDS</code>)
      * @param properties properties for {@link ToolInstallation}
      */
     @DataBoundConstructor
@@ -69,30 +71,55 @@ public class BDSInstallation extends ToolInstallation implements
     }
 
     /**
+     * Returns a {@link FilePath} object for the home directory.
+     *
+     * @param channel a {@link VirtualChannel} interface for {@link FilePath}
+     * @return {@link FilePath} object for the home directory
+     * @since 3.0
+     */
+    public FilePath getHome(VirtualChannel channel) {
+        return new FilePath(channel, getHome());
+    }
+
+    /**
+     * Returns a {@link FilePath} object for the batch file that initializes
+     * environment variables for a Command Prompt.
+     *
+     * @param channel a {@link VirtualChannel} interface for {@link FilePath}
+     * @return {@link FilePath} object for the batch file
+     * @since 3.0
+     */
+    public FilePath getBatchFile(VirtualChannel channel) {
+        FilePath bin = new FilePath(getHome(channel), BIN_DIRECTORY_NAME);
+        return new FilePath(bin, BATCH_FILE_NAME);
+    }
+
+    /**
      * Returns a {@link NodeSpecific} version of this object.
      *
-     * @param node a {@link Node} object
-     * @param log a {@link TaskListener} object
-     * @return {@link NodeSpecific} version of this object
+     * @param node node for whitch the return value is specialized.
+     * @param listener a {@link TaskListener} object
+     * @return {@link NodeSpecific} copy of this object
      * @throws IOException
      * @throws InterruptedException
      */
     @Override
-    public BDSInstallation forNode(Node node, TaskListener log) throws
-            IOException, InterruptedException {
-        return new BDSInstallation(getName(), translateFor(node, log),
+    public BDSInstallation forNode(Node node, TaskListener listener)
+            throws IOException, InterruptedException {
+        return new BDSInstallation(getName(), translateFor(node, listener),
                 getProperties().toList());
     }
 
     /**
      * Returns an {@link EnvironmentSpecific} version of this object.
      *
-     * @param env an {@link EnvVar} object
-     * @return {@link EnvironmentSpecific} version of this object
+     * @param environment environment for which the return value is
+     * specialized.
+     * @return {@link EnvironmentSpecific} copy of this object
      */
     @Override
-    public BDSInstallation forEnvironment(EnvVars env) {
-        return new BDSInstallation(getName(), env.expand(getHome()),
+    public BDSInstallation forEnvironment(EnvVars environment) {
+        return new BDSInstallation(getName(), environment.expand(getHome()),
                 getProperties().toList());
     }
 
@@ -103,13 +130,18 @@ public class BDSInstallation extends ToolInstallation implements
      * @since 2.0
      */
     @Extension
-    public static class BDSInstallationDescriptor extends
-            ToolDescriptor<BDSInstallation> {
+    public static class BDSInstallationDescriptor
+            extends ToolDescriptor<BDSInstallation> {
 
         public BDSInstallationDescriptor() {
             load();
         }
 
+        /**
+         * @deprecated As of version 3.0, replaced by
+         * {@link BDSInstallation#getBatchFile}.
+         */
+        @Deprecated
         public FilePath getBatchFile(FilePath home) {
             FilePath bin = new FilePath(home, BIN_DIRECTORY_NAME);
             return new FilePath(bin, BATCH_FILE_NAME);

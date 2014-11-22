@@ -160,7 +160,7 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
     /**
      * Performs a RAD Studio build.
      *
-     * @param build an {@link AxstractBuild} object
+     * @param build an {@link AbstractBuild} object
      * @param launcher a {@link Launcher} object
      * @param listener a {@link BuildListener} object
      * @return true if this object did not detect a failure.
