@@ -26,7 +26,7 @@
     <artifactId>bds-plugin</artifactId>
     <packaging>hpi</packaging>
     <name>RAD Studio Plugin</name>
-    <version>3.1</version>
+    <version>3.2-SNAPSHOT</version>
     <description>
         Jenkins plugin to allow users to build RAD Studio projects or project
         groups.
@@ -53,7 +53,7 @@
     <scm>
         <connection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
         <developerConnection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
-        <tag>release/3.1</tag>
+        <tag>default</tag>
         <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/src</url>
     </scm>
     <build>
