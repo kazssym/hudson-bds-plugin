@@ -19,7 +19,6 @@
 package org.vx68k.jenkins.plugin;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.StringTokenizer;
 import hudson.EnvVars;
 import hudson.FilePath;
