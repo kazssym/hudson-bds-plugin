@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.565</version>
+        <version>1.532</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>bds-plugin</artifactId>
@@ -62,10 +62,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- To avoid test failures on Windows: -->
+                    <!-- Parent version 1.532 with JDK 1.7 appears to be OK.
                     <excludes>
-                        <!-- To avoid test failures on Windows: -->
                         <exclude>InjectedTest.java</exclude>
                     </excludes>
+                    -->
                 </configuration>
             </plugin>
             <plugin>

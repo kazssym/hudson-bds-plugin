@@ -270,15 +270,15 @@ public class BDSInstallation extends ToolInstallation
             return ready;
         }
 
-        @Override
-        protected FormValidation checkHomeDirectory(File home) {
-            File bin = new File(home, BIN_DIRECTORY_NAME);
-            File batch = new File(bin, BATCH_FILE_NAME);
-            if (!batch.isFile()) {
-                return FormValidation.error(NOT_INSTALLATION_DIRECTORY);
-            }
-            return super.checkHomeDirectory(home);
-        }
+//        @Override
+//        protected FormValidation checkHomeDirectory(File home) {
+//            File bin = new File(home, BIN_DIRECTORY_NAME);
+//            File batch = new File(bin, BATCH_FILE_NAME);
+//            if (!batch.isFile()) {
+//                return FormValidation.error(NOT_INSTALLATION_DIRECTORY);
+//            }
+//            return super.checkHomeDirectory(home);
+//        }
 
         /**
          * Returns the display name of this plugin.
