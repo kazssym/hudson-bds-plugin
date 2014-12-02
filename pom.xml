@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  pom.xml for RAD Studio Plugin for Jenkins
+  pom.xml for RAD Studio Plugin for Hudson
   Copyright (C) 2014 Kaz Nishimura
 
   This program is free software: you can redistribute it and/or modify it
@@ -18,20 +18,21 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>plugin</artifactId>
-        <version>1.532</version>
+        <groupId>org.eclipse.hudson.plugins</groupId>
+        <artifactId>hudson-plugin-parent</artifactId>
+        <version>3.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.vx68k.hudson.plugin</groupId>
     <artifactId>bds-plugin</artifactId>
     <packaging>hpi</packaging>
     <name>RAD Studio Plugin</name>
     <version>4.0-SNAPSHOT</version>
     <description>
-        Jenkins plugin to allow users to build RAD Studio projects or project
+        Hudson plugin to allow users to build RAD Studio projects or project
         groups.
     </description>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/RAD+Studio+Plugin</url>
+    <url>http://kazssym.bitbucket.org/hudson-bds-plugin/</url>
     <issueManagement>
         <system>Bitbucket</system>
         <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/issues</url>
@@ -60,25 +61,37 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- To avoid test failures on Windows: -->
-                    <!-- Parent version 1.532 with JDK 1.7 appears to be OK.
-                    <excludes>
-                        <exclude>InjectedTest.java</exclude>
-                    </excludes>
-                    -->
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <locale>en_US</locale>
                     <links>
-                        <link>http://javadoc.jenkins-ci.org/</link>
+                        <link>http://hudson-ci.org/javadoc/</link>
                         <link>http://stapler.kohsuke.org/apidocs/</link>
                     </links>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.5</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                 </configuration>
             </plugin>
             <plugin>
@@ -92,18 +105,12 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
     <properties>
         <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     </properties>
