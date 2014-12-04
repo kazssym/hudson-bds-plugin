@@ -21,14 +21,22 @@ package org.vx68k.jenkins.plugin.bds;
 import java.io.IOException;
 import java.util.Map;
 import hudson.EnvVars;
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
+import hudson.model.Hudson;
 import hudson.model.Node;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.Builder;
+import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.jenkins.plugin.AbstractMSBuildBuilder;
+import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
+import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
  * Builds a RAD Studio project or project group.
@@ -76,8 +84,8 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
             BuildListener listener) throws InterruptedException, IOException {
-        BDSBuilderDescriptor descriptor =
-                (BDSBuilderDescriptor) getDescriptor();
+        Descriptor descriptor =
+                (Descriptor) getDescriptor();
 
         BDSInstallation installation =
                 descriptor.getInstallation(getInstallationName());
@@ -109,5 +117,72 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
         FilePath framworkHome = new FilePath(launcher.getChannel(),
                 environment.get("FrameworkDir"));
         return build(build, launcher, listener, framworkHome, environment);
+    }
+
+    /**
+     * Describes {@link BDSBuilder}.
+     *
+     * @author Kaz Nishimura
+     * @since 4.0
+     */
+    @Extension
+    public static final class Descriptor
+            extends BuildStepDescriptor<Builder> {
+
+        public Descriptor() {
+        }
+
+        /**
+         * Returns a RAD Studio installation identified by a name.
+         *
+         * @param name name of a RAD Studio installation
+         * @return RAD Studio installation, or <code>null</code> if not
+         * found
+         */
+        public BDSInstallation getInstallation(String name) {
+            for (BDSInstallation i : getInstallations()) {
+                if (i.getName().equals(name)) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Returns an array of RAD Studio installations. This method
+         * uses {@link BDSInstallationDescriptor#getInstallations} to get the
+         * installations.
+         *
+         * @return array of RAD Studio installations
+         */
+        protected BDSInstallation[] getInstallations() {
+            Hudson application = Hudson.getInstance();
+            return application.getDescriptorByType(
+                    BDSInstallationDescriptor.class).getInstallations();
+        }
+
+        public ListBoxModel doFillInstallationNameItems() {
+            ListBoxModel items = new ListBoxModel();
+
+            for (BDSInstallation i : getInstallations()) {
+                items.add(i.getName(), i.getName());
+            }
+            return items;
+        }
+
+        @Override
+        public boolean isApplicable(Class<? extends AbstractProject> type) {
+            return true;
+        }
+
+        /**
+         * Returns the display name of this object.
+         *
+         * @return the display name
+         */
+        @Override
+        public String getDisplayName() {
+            return Messages.getBuilderDisplayName();
+        }
     }
 }
