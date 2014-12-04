@@ -237,6 +237,9 @@ public class BDSInstallation extends ToolInstallation
             extends ToolDescriptor<BDSInstallation> {
 
         public BDSInstallationDescriptor() {
+            // {@link ToolDescriptor#installations} can be <code>null</code>
+            // when there is no configuration
+            setInstallations(new BDSInstallation[0]);
             load();
         }
 
