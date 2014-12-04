@@ -18,8 +18,9 @@
 
 package org.vx68k.jenkins.plugin.bds;
 
-import java.io.File;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,7 +44,6 @@ import hudson.slaves.NodeSpecific;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
-import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -129,32 +129,38 @@ public class BDSInstallation extends ToolInstallation
     public Map<String, String> readVariables(AbstractBuild<?, ?> build,
             Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
+        InputStream batch;
         FilePath batchFile = getBatchFile(launcher.getChannel());
         if (batchFile.isRemote()) {
-            String cmd = build.getEnvironment(listener).get("COMSPEC");
-            if (cmd == null) {
+            EnvVars environment = build.getEnvironment(listener);
+
+            String comspec = environment.get("COMSPEC");
+            if (comspec == null) {
                 listener.error("COMSPEC is not set: "
-                        + "this node is probably not Windows.");
+                        + "this node is probably not Windows."); // TODO: I18N.
                 return null;
             }
 
-            Launcher.ProcStarter readerStarter = launcher.launch();
-            readerStarter.readStdout();
-            readerStarter.stderr(listener.getLogger());
-            readerStarter.cmds(cmd, "/c", "type", batchFile.getRemote());
+            ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
-            Proc reader = readerStarter.start();
-            Map<String, String> variables = readVariables(reader.getStdout());
+            Launcher.ProcStarter shellStarter = launcher.launch();
+            shellStarter.envs(environment);
+            shellStarter.stdout(stdout);
+            shellStarter.stderr(listener.getLogger());
+            shellStarter.cmds(comspec, "/c", "type", batchFile.getRemote());
 
-            int status = reader.join();
+            Proc shell = shellStarter.start();
+            int status = shell.join();
             if (status != 0) {
                 // Any error messages must already be printed.
                 return null;
             }
 
-            return variables;
+            batch = new ByteArrayInputStream(stdout.toByteArray());
+        } else {
+            batch = batchFile.read();
         }
-        return readVariables(batchFile.read());
+        return readVariables(batch);
     }
 
     /**
