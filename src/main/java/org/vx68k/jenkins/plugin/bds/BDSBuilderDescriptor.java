@@ -20,10 +20,10 @@ package org.vx68k.jenkins.plugin.bds;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
+import hudson.model.Hudson;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
@@ -67,7 +67,7 @@ public class BDSBuilderDescriptor extends BuildStepDescriptor<Builder> {
      * @return array of RAD Studio installations
      */
     protected BDSInstallation[] getInstallations() {
-        Jenkins application = Jenkins.getInstance();
+        Hudson application = Hudson.getInstance();
         return application.getDescriptorByType(
                 BDSInstallationDescriptor.class).getInstallations();
     }
