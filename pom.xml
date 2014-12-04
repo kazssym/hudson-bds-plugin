@@ -62,13 +62,34 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <locale>en_US</locale>
                     <links>
                         <link>http://hudson-ci.org/javadoc/</link>
                         <link>http://stapler.kohsuke.org/apidocs/</link>
                     </links>
+                    <locale>en_US</locale>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -113,5 +134,6 @@
     </distributionManagement>
     <properties>
         <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+        <hudsonTags>builder</hudsonTags>
     </properties>
 </project>
