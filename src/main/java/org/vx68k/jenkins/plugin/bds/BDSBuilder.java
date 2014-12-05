@@ -54,10 +54,11 @@ public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
     }
 
     /**
-     * Returns a {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
+     * Returns a new {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
      * that has the same properties as this object.
      *
      * @return new {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
+     * @since 4.0
      */
     protected org.vx68k.hudson.plugin.bds.BDSBuilder translate() {
         return new org.vx68k.hudson.plugin.bds.BDSBuilder(getProjectFile(),
