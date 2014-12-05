@@ -1,5 +1,5 @@
 /*
- * BDSBuilder for RAD Studio Plugin for Jenkins
+ * BDSBuilder for backward compatibility
  * Copyright (C) 2014 Kaz Nishimura
  *
  * This program is free software: you can redistribute it and/or modify it
@@ -18,23 +18,17 @@
 
 package org.vx68k.jenkins.plugin.bds;
 
-import java.io.IOException;
-import java.util.Map;
-import hudson.EnvVars;
+import com.thoughtworks.xstream.converters.MarshallingContext;
 import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.model.Computer;
 import hudson.model.Hudson;
-import hudson.model.Node;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.vx68k.hudson.plugin.AbstractMSBuildBuilder;
+import hudson.util.XStream2;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
@@ -43,84 +37,82 @@ import org.vx68k.jenkins.plugin.bds.resources.Messages;
  *
  * @author Kaz Nishimura
  * @since 2.0
+ * @deprecated As of version 4.0, replaced by {@link
+ * org.vx68k.hudson.plugin.bds.BDSBuilder}.
  */
-public class BDSBuilder extends AbstractMSBuildBuilder {
-
-    private final String installationName;
+@Deprecated
+public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
 
     /**
-     * Constructs this object with properties..
+     * Constructs this object with properties.
      *
      * @param projectFile name of a MSBuild project file
      * @param switches MSBuild switches
      * @param installationName name of a RAD Studio installation
      */
-    @DataBoundConstructor
     public BDSBuilder(String projectFile, String switches,
             String installationName) {
-        super(projectFile, switches);
-        this.installationName = installationName;
+        super(projectFile, switches, installationName);
     }
 
     /**
-     * Returns the name of the RAD Studio installation.
+     * Returns a {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
+     * that has the same properties as this object.
      *
-     * @return name of the RAD Studio installation
+     * @return new {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
      */
-    public String getInstallationName() {
-        return installationName;
+    protected org.vx68k.hudson.plugin.bds.BDSBuilder translate() {
+        return new org.vx68k.hudson.plugin.bds.BDSBuilder(getProjectFile(),
+                getSwitches(), getInstallationName());
     }
 
     /**
-     * Performs a RAD Studio build.
+     * Converts XML elements for {@link BDSBuilder}.
      *
-     * @param build an {@link AbstractBuild} object
-     * @param launcher a {@link Launcher} object
-     * @param listener a {@link BuildListener} object
-     * @return true if this object did not detect a failure.
-     * @throws InterruptedException
-     * @throws IOException
+     * @author Kaz Nishimura
+     * @since 4.0
      */
-    @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener) throws InterruptedException, IOException {
-        Descriptor descriptor =
-                (Descriptor) getDescriptor();
+    public static final class ConverterImpl
+            extends XStream2.PassthruConverter<BDSBuilder> {
 
-        BDSInstallation installation =
-                descriptor.getInstallation(getInstallationName());
-        if (installation == null) {
-            listener.fatalError("Installation not found."); // TODO: I18N.
-            return false;
+        public ConverterImpl(XStream2 xstream) {
+            super(xstream);
         }
 
-        Node node = Computer.currentComputer().getNode();
-        installation = installation.forNode(node, listener);
-
-        EnvVars environment = build.getEnvironment(listener);
-        installation = installation.forEnvironment(environment);
-
-        if (installation.getHome().isEmpty()) {
-            listener.error("Home is not specified."); // TODO: I38N.
-            return false;
+        @Override
+        public void marshal(Object object, HierarchicalStreamWriter writer,
+                MarshallingContext context) {
+            if (object instanceof BDSBuilder) {
+                object = ((BDSBuilder) object).translate();
+            }
+            super.marshal(object, writer, context);
         }
 
-        Map<String, String> variables =
-                installation.readVariables(build, launcher, listener);
-        if (variables == null) {
-            // Any error messages must already be printed.
-            return false;
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+            Object object = super.unmarshal(reader, context);
+            if (object instanceof BDSBuilder) {
+                object = ((BDSBuilder) object).translate();
+            }
+            return object;
         }
-        environment.putAll(variables);
 
-        // RAD Stduio sets FrameworkDir with FrameworkVersion appended.
-        FilePath framworkHome = new FilePath(launcher.getChannel(),
-                environment.get("FrameworkDir"));
-        return build(build, launcher, listener, framworkHome, environment);
+        /**
+         * Does nothing.
+         *
+         * @param object a {@link BDSBuilder} object.
+         * @param context a {@link UnmarshallingContext} object.
+         */
+        @Override
+        protected void callback(BDSBuilder object,
+                UnmarshallingContext context) {
+        }
     }
 
     /**
-     * Describes {@link BDSBuilder}.
+     * Describes {@link BDSBuilder}. This class is retained for backward
+     * compatibility.
      *
      * @author Kaz Nishimura
      * @since 4.0
@@ -129,56 +121,28 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
     public static final class Descriptor
             extends BuildStepDescriptor<Builder> {
 
+        /**
+         * Does nothing but constructs this object.
+         */
         public Descriptor() {
         }
 
         /**
-         * Returns a RAD Studio installation identified by a name.
+         * Returns <code>false</code> to make {@link BDSBuilder} hidden
+         * from users.
          *
-         * @param name name of a RAD Studio installation
-         * @return RAD Studio installation, or <code>null</code> if not
-         * found
+         * @param type {@link Class} object for projects.
+         * @return <code>false</code>
          */
-        public BDSInstallation getInstallation(String name) {
-            for (BDSInstallation i : getInstallations()) {
-                if (i.getName().equals(name)) {
-                    return i;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Returns an array of RAD Studio installations. This method
-         * uses {@link BDSInstallationDescriptor#getInstallations} to get the
-         * installations.
-         *
-         * @return array of RAD Studio installations
-         */
-        protected BDSInstallation[] getInstallations() {
-            Hudson application = Hudson.getInstance();
-            return application.getDescriptorByType(
-                    BDSInstallationDescriptor.class).getInstallations();
-        }
-
-        public ListBoxModel doFillInstallationNameItems() {
-            ListBoxModel items = new ListBoxModel();
-
-            for (BDSInstallation i : getInstallations()) {
-                items.add(i.getName(), i.getName());
-            }
-            return items;
-        }
-
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> type) {
-            return true;
+            return false;
         }
 
         /**
-         * Returns the display name of this object.
+         * Returns the display name for {@link BDSBuilder}.
          *
-         * @return the display name
+         * @return display name for {@link BDSBuilder}
          */
         @Override
         public String getDisplayName() {
