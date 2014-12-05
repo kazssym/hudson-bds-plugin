@@ -18,18 +18,15 @@
 
 package org.vx68k.jenkins.plugin.bds;
 
-import com.thoughtworks.xstream.converters.MarshallingContext;
 import hudson.Extension;
 import hudson.model.AbstractProject;
-import hudson.model.Hudson;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
-import hudson.util.ListBoxModel;
 import hudson.util.XStream2;
+import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
