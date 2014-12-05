@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.vx68k.jenkins.plugin;
+package org.vx68k.hudson.plugin;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
