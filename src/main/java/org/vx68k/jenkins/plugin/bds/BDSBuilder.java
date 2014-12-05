@@ -33,7 +33,8 @@ import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
- * Builds a RAD Studio project or project group.
+ * Builds a RAD Studio project or project group. This class is retained for
+ * backward compatibility.
  *
  * @author Kaz Nishimura
  * @since 2.0
