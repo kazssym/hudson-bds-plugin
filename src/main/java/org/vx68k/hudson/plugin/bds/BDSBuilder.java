@@ -30,11 +30,12 @@ import hudson.model.BuildListener;
 import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Node;
+import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.vx68k.hudson.plugin.AbstractMSBuildBuilder;
+import org.vx68k.hudson.plugin.AbstractMsbuildBuilder;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
@@ -45,15 +46,15 @@ import org.vx68k.jenkins.plugin.bds.resources.Messages;
  * @author Kaz Nishimura
  * @since 4.0
  */
-public class BDSBuilder extends AbstractMSBuildBuilder {
+public class BDSBuilder extends AbstractMsbuildBuilder {
 
     private final String installationName;
 
     /**
-     * Constructs this object with properties.
+     * Constructs this object and sets the immutable properties.
      *
      * @param projectFile name of a MSBuild project file
-     * @param switches MSBuild switches
+     * @param switches command-line switches
      * @param installationName name of a RAD Studio installation
      */
     @DataBoundConstructor
@@ -74,51 +75,56 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
     }
 
     /**
-     * Performs a RAD Studio build.
+     * Builds environment variables for RAD Studio.
      *
      * @param build {@link AbstractBuild} object
      * @param launcher {@link Launcher} object
      * @param listener {@link BuildListener} object
-     * @return true if this object does not detect a failure.
-     * @throws InterruptedException
-     * @throws IOException
+     * @param environment environment variables to which new ones are added
+     * @throws IOException if an I/O exception has occurred
+     * @throws InterruptedException if interrupted
      */
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener) throws InterruptedException, IOException {
-        Descriptor descriptor =
-                (Descriptor) getDescriptor();
+    protected void buildEnvVars(AbstractBuild<?, ?> build, Launcher launcher,
+            BuildListener listener, EnvVars environment)
+            throws IOException, InterruptedException {
+        super.buildEnvVars(build, launcher, listener, environment);
 
-        BDSInstallation installation =
-                descriptor.getInstallation(getInstallationName());
-        if (installation == null) {
-            listener.fatalError("Installation not found."); // TODO: I18N.
-            return false;
-        }
-
+        Descriptor descriptor = (Descriptor) getDescriptor();
         Node node = Computer.currentComputer().getNode();
-        installation = installation.forNode(node, listener);
 
-        EnvVars environment = build.getEnvironment(listener);
+        BDSInstallation installation;
+        installation = descriptor.getInstallation(getInstallationName());
+        installation = installation.forNode(node, listener);
         installation = installation.forEnvironment(environment);
 
-        if (installation.getHome().isEmpty()) {
-            listener.error("Home is not specified."); // TODO: I38N.
-            return false;
-        }
-
         Map<String, String> variables =
-                installation.readVariables(build, launcher, listener);
-        if (variables == null) {
-            // Any error messages must already be printed.
-            return false;
+                 installation.readVariables(build, launcher, listener);
+        // Any error messages shall already be printed.
+        if (variables != null) {
+            environment.putAll(variables);
         }
-        environment.putAll(variables);
+    }
 
-        // RAD Stduio sets FrameworkDir with FrameworkVersion appended.
-        FilePath framworkHome = new FilePath(launcher.getChannel(),
-                environment.get("FrameworkDir"));
-        return build(build, launcher, listener, framworkHome, environment);
+    /**
+     * Returns the file path to the MSBuild executable used by RAD Studio.
+     *
+     * @param channel {@link VirtualChannel} object for {@link FilePath}
+     * @param environment environment variables
+     * @return file path to a MSBuild executable, or <code>null</code> if it
+     * cannot be determined
+     */
+    @Override
+    protected FilePath getMsbuildPath(VirtualChannel channel,
+            EnvVars environment) {
+        String frameworkDir = environment.get("FrameworkDir");
+        if (frameworkDir == null) {
+            return null;
+        }
+
+        // RAD Stduio sets FrameworkDir including FrameworkVersion.
+        FilePath msbuildPath = new FilePath(channel, frameworkDir);
+        return new FilePath(msbuildPath, MSBUILD_FILE_NAME);
     }
 
     /**
@@ -132,7 +138,7 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
             extends BuildStepDescriptor<Builder> {
 
         /**
-         * Does nothing but constructs this object.
+         * Just constructs this object.
          */
         public Descriptor() {
         }
@@ -177,6 +183,7 @@ public class BDSBuilder extends AbstractMSBuildBuilder {
 
         /**
          * Returns <code>true</code> currently for any projects.
+         *
          * @param type {@link Class} object for projects.
          * @return <code>true</code>
          */
