@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import org.vx68k.jenkins.plugin.bds.resources.Messages;
+import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
  * Builds a RAD Studio project or project group. This class is retained for

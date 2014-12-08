@@ -36,9 +36,9 @@ import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.hudson.plugin.AbstractMsbuildBuilder;
+import org.vx68k.hudson.plugin.bds.resources.Messages;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
-import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
  * Builds a RAD Studio project or project group.
