@@ -122,13 +122,13 @@ public class BDSInstallation extends ToolInstallation
      * @param launcher a {@link Launcher} object
      * @param listener a {@link BuildListener} object
      * @return map of the environment variables
-     * @throws InterruptedException
-     * @throws IOException
+     * @throws IOException if an I/O exception has occurred
+     * @throws InterruptedException if interrupted
      * @since 3.0
      */
     public Map<String, String> readVariables(AbstractBuild<?, ?> build,
             Launcher launcher, BuildListener listener)
-            throws InterruptedException, IOException {
+            throws IOException, InterruptedException {
         InputStream batch;
         FilePath batchFile = getBatchFile(launcher.getChannel());
         if (batchFile.isRemote()) {
@@ -169,7 +169,7 @@ public class BDSInstallation extends ToolInstallation
      * @param stream input stream from the batch file for initializing a RAD
      * Studio Command Prompt
      * @return map of the environment variables
-     * @throws IOException
+     * @throws IOException if an I/O exception has occurred
      * @since 3.0
      */
     protected Map<String, String> readVariables(InputStream stream)
@@ -203,8 +203,8 @@ public class BDSInstallation extends ToolInstallation
      * @param node node for which the return value is specialized.
      * @param listener a {@link TaskListener} object
      * @return {@link NodeSpecific} copy of this object
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException if an I/O exception has occurred
+     * @throws InterruptedException if interrupted
      */
     @Override
     public BDSInstallation forNode(Node node, TaskListener listener)
@@ -244,6 +244,8 @@ public class BDSInstallation extends ToolInstallation
         }
 
         /**
+         * @param home file path to a RAD Studio installation
+         * @return file path to the batch file
          * @deprecated As of version 3.0, replaced by
          * {@link BDSInstallation#getBatchFile}.
          */
@@ -290,9 +292,9 @@ public class BDSInstallation extends ToolInstallation
 //        }
 
         /**
-         * Returns the display name of this plugin.
+         * Returns the display name for {@link BDSInstallation}.
          *
-         * @return the display name
+         * @return display name for {@link BDSInstallation}
          */
         @Override
         public String getDisplayName() {
