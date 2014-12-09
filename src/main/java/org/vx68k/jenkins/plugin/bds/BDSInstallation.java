@@ -244,18 +244,6 @@ public class BDSInstallation extends ToolInstallation
         }
 
         /**
-         * @param home file path to a RAD Studio installation
-         * @return file path to the batch file
-         * @deprecated As of version 3.0, replaced by
-         * {@link BDSInstallation#getBatchFile}.
-         */
-        @Deprecated
-        public FilePath getBatchFile(FilePath home) {
-            FilePath bin = new FilePath(home, BIN_DIRECTORY_NAME);
-            return new FilePath(bin, BATCH_FILE_NAME);
-        }
-
-        /**
          * Finds a {@link BDSInstallation} object by its name.
          * If there is nothing found, it returns <code>null</code>.
          *
