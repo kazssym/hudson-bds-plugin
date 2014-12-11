@@ -140,12 +140,6 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
     public static final class Descriptor
             extends BuildStepDescriptor<Builder> {
 
-        /**
-         * Just constructs this object.
-         */
-        public Descriptor() {
-        }
-
         public ListBoxModel doFillInstallationNameItems() {
             Hudson application = Hudson.getInstance();
             BDSInstallationDescriptor descriptor
