@@ -25,6 +25,8 @@ import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import hudson.model.Hudson;
 import org.kohsuke.stapler.DataBoundConstructor;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
@@ -72,7 +74,7 @@ public class BDSInstallation
      * @since 2.0
      */
     @Extension
-    public static class BDSInstallationDescriptor
+    public static final class BDSInstallationDescriptor
             extends ToolDescriptor<BDSInstallation> {
 
         /**
@@ -81,15 +83,18 @@ public class BDSInstallation
          * has no installations, this constructor also migrates all RAD
          * Studio installations.
          */
+        private static final String DELETE_ALL_KEY = "deleteAll";
+
         public BDSInstallationDescriptor() {
-            Hudson application = Hudson.getInstance();
-            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor descriptor
-                    = application.getDescriptorByType(
-                            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor.class);
             // {@link ToolDescriptor#installations} can be <code>null</code>
             // when there is no configuration
             setInstallations(new BDSInstallation[0]);
             load();
+
+            Hudson application = Hudson.getInstance();
+            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor descriptor
+                    = application.getDescriptorByType(
+                            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor.class);
             if (descriptor.getInstallations().length == 0) {
                     BDSInstallation[] installations = getInstallations();
                 org.vx68k.hudson.plugin.bds.BDSInstallation[] newInstallations
@@ -99,6 +104,16 @@ public class BDSInstallation
                 }
                 descriptor.setInstallations(newInstallations);
             }
+        }
+
+        @Override
+        public boolean configure(StaplerRequest request, JSONObject json)
+                throws FormException {
+            if (json.has(DELETE_ALL_KEY)) {
+                setInstallations();
+                save();
+            }
+            return true;
         }
 
         /**
