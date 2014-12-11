@@ -20,18 +20,21 @@ package org.vx68k.jenkins.plugin.bds;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
+import hudson.model.Hudson;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.ListBoxModel;
 import hudson.util.XStream2;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
+import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 
 /**
- * Builds a RAD Studio project or project group. This class is retained for
- * backward compatibility.
+ * Deprecated RAD Studio project or project group builder.  This class is
+ * retained for backward compatibility.
  *
  * @author Kaz Nishimura
  * @since 2.0
@@ -42,10 +45,10 @@ import org.vx68k.hudson.plugin.bds.resources.Messages;
 public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
 
     /**
-     * Constructs this object with properties.
+     * Constructs this object with immutable properties.
      *
      * @param projectFile name of a MSBuild project file
-     * @param switches MSBuild switches
+     * @param switches command-line switches
      * @param installationName name of a RAD Studio installation
      */
     public BDSBuilder(String projectFile, String switches,
@@ -110,27 +113,61 @@ public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
     }
 
     /**
-     * Describes {@link BDSBuilder}. This class is retained for backward
-     * compatibility.
+     * Describes deprecated {@link BDSBuilder}. This class is retained for
+     * backward compatibility.
      *
      * @author Kaz Nishimura
-     * @since 4.0
+     * @since 2.0
      */
     @Extension
-    public static final class Descriptor
+    public static final class BDSBuilderDescriptor
             extends BuildStepDescriptor<Builder> {
 
         /**
-         * Does nothing but constructs this object.
+         * Returns a deprecated {@link BDSBuilder} object that has a specified name.
+         *
+         * @param name name of a deprecated {@link BDSBuilder} object
+         * @return deprecated {@link BDSBuilder}, or <code>null</code> if not
+         * found
+         * @since 3.0
          */
-        public Descriptor() {
+        public BDSInstallation getInstallation(String name) {
+            for (BDSInstallation i : getInstallations()) {
+                if (i.getName().equals(name)) {
+                    return i;
+                }
+            }
+            return null;
         }
 
         /**
-         * Returns <code>false</code> to make {@link BDSBuilder} hidden
-         * from users.
+         * Returns all deprecated {@link BDSBuilder}s.
+         * This method uses {@link BDSInstallationDescriptor#getInstallations}
+         * to get the installations.
          *
-         * @param type {@link Class} object for projects.
+         * @return all deprecated {@link BDSBuilder}s
+         * @since 3.0
+         */
+        protected BDSInstallation[] getInstallations() {
+            Hudson application = Hudson.getInstance();
+            return application.getDescriptorByType(
+                    BDSInstallationDescriptor.class).getInstallations();
+        }
+
+        public ListBoxModel doFillInstallationNameItems() {
+            ListBoxModel items = new ListBoxModel();
+
+            for (BDSInstallation i : getInstallations()) {
+                items.add(i.getName(), i.getName());
+            }
+            return items;
+        }
+
+        /**
+         * Returns <code>false</code> to make deprecated {@link BDSBuilder}
+         * hidden from users.
+         *
+         * @param type {@link Class} object of projects.
          * @return <code>false</code>
          */
         @Override
@@ -139,9 +176,9 @@ public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
         }
 
         /**
-         * Returns the display name for {@link BDSBuilder}.
+         * Returns the display name for deprecated {@link BDSBuilder}.
          *
-         * @return display name for {@link BDSBuilder}
+         * @return display name for deprecated {@link BDSBuilder}
          */
         @Override
         public String getDisplayName() {
