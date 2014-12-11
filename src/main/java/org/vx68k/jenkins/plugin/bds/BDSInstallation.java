@@ -1,5 +1,5 @@
 /*
- * BDSInstallation
+ * BDSInstallation for backward compatibility
  * Copyright (C) 2014 Kaz Nishimura
  *
  * This program is free software: you can redistribute it and/or modify it
@@ -18,266 +18,77 @@
 
 package org.vx68k.jenkins.plugin.bds;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import hudson.EnvVars;
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.Proc;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.EnvironmentSpecific;
-import hudson.model.Node;
-import hudson.model.TaskListener;
-import hudson.remoting.VirtualChannel;
-import hudson.slaves.NodeSpecific;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import hudson.model.Hudson;
 
 /**
- * Configures RAD Studio installations for {@link BDSBuilder}.
+ * Deprecated RAD Studio installation.
+ * This class is retained for backward compatibility.
  *
  * @author Kaz Nishimura
  * @since 1.0
+ * @deprecated As of version 4.0, replaced by {@link
+ * org.vx68k.hudson.plugin.bds.BDSInstallation}
  */
-public class BDSInstallation extends ToolInstallation
-        implements NodeSpecific<BDSInstallation>,
-        EnvironmentSpecific<BDSInstallation> {
+public class BDSInstallation
+        extends org.vx68k.hudson.plugin.bds.BDSInstallation {
 
-    private static final long serialVersionUID = 2L;
-
-    private static final String DISPLAY_NAME = "RAD Studio";
-
-    private static final String NOT_INSTALLATION_DIRECTORY =
-            "Not a RAD Studio installation directory."; // TODO: I18N.
-
-    private static final String BIN_DIRECTORY_NAME = "bin";
-    private static final String BATCH_FILE_NAME = "rsvars.bat";
+    private static final long serialVersionUID = 3L;
 
     /**
-     * Pattern to match a <code>set</code> command.
-     */
-    private static final Pattern SET_COMMAND_PATTERN =
-            Pattern.compile("\\s*@?set\\s+([^=]+)=(.*)",
-                    Pattern.CASE_INSENSITIVE);
-
-    /**
-     * Constructs this object with property values.
+     * Constructs this object with immutable properties.
      *
      * @param name name of this installation
      * @param home home directory (the value of <code>BDS</code>)
      * @param properties properties for {@link ToolInstallation}
      */
-    @DataBoundConstructor
     public BDSInstallation(String name, String home,
             List<? extends ToolProperty<?>> properties) {
         super(name, home, properties);
     }
 
     /**
-     * Returns a {@link FilePath} object for the home directory.
+     * Converts this object to {@link
+     * org.vx68k.hudson.plugin.bds.BDSInstallation}.
      *
-     * @param channel a {@link VirtualChannel} interface for {@link FilePath}
-     * @return {@link FilePath} object for the home directory
-     * @since 3.0
+     * @return {@link org.vx68k.hudson.plugin.bds.BDSInstallation} object
      */
-    protected FilePath getHome(VirtualChannel channel) {
-        return new FilePath(channel, getHome());
+    public org.vx68k.hudson.plugin.bds.BDSInstallation convert() {
+        return new org.vx68k.hudson.plugin.bds.BDSInstallation(getName(),
+                getHome(), getProperties().toList());
     }
 
     /**
-     * Returns a {@link FilePath} object for the batch file which initializes
-     * a RAD Studio Command Prompt.
-     *
-     * @param channel a {@link VirtualChannel} interface for {@link FilePath}
-     * @return {@link FilePath} object for the batch file
-     * @since 3.0
-     */
-    protected FilePath getBatchFile(VirtualChannel channel) {
-        FilePath bin = new FilePath(getHome(channel), BIN_DIRECTORY_NAME);
-        return new FilePath(bin, BATCH_FILE_NAME);
-    }
-
-    /**
-     * Reads the RAD Studio environment variables from the batch file which
-     * initializes a RAD Studio Command Prompt.
-     * For a remote node, a <code>type</code> command will be used to read the
-     * file content.
-     *
-     * @param build an {@link AbstractBuild} object
-     * @param launcher a {@link Launcher} object
-     * @param listener a {@link BuildListener} object
-     * @return map of the environment variables
-     * @throws IOException if an I/O exception has occurred
-     * @throws InterruptedException if interrupted
-     * @since 3.0
-     */
-    public Map<String, String> readVariables(AbstractBuild<?, ?> build,
-            Launcher launcher, BuildListener listener)
-            throws IOException, InterruptedException {
-        InputStream batch;
-        FilePath batchFile = getBatchFile(launcher.getChannel());
-        if (batchFile.isRemote()) {
-            EnvVars environment = build.getEnvironment(listener);
-
-            String comspec = environment.get("COMSPEC");
-            if (comspec == null) {
-                listener.error("COMSPEC is not set: "
-                        + "this node is probably not Windows."); // TODO: I18N.
-                return null;
-            }
-
-            ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-
-            Launcher.ProcStarter shellStarter = launcher.launch();
-            shellStarter.envs(environment);
-            shellStarter.stdout(stdout);
-            shellStarter.stderr(listener.getLogger());
-            shellStarter.cmds(comspec, "/c", "type", batchFile.getRemote());
-
-            Proc shell = shellStarter.start();
-            int status = shell.join();
-            if (status != 0) {
-                // Any error messages must already be printed.
-                return null;
-            }
-
-            batch = new ByteArrayInputStream(stdout.toByteArray());
-        } else {
-            batch = batchFile.read();
-        }
-        return readVariables(batch);
-    }
-
-    /**
-     * Read the RAD Studio environment variables from an input stream.
-     *
-     * @param stream input stream from the batch file for initializing a RAD
-     * Studio Command Prompt
-     * @return map of the environment variables
-     * @throws IOException if an I/O exception has occurred
-     * @since 3.0
-     */
-    protected Map<String, String> readVariables(InputStream stream)
-            throws IOException {
-        Map<String, String> variables =
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
-        BufferedReader reader =
-                new BufferedReader(new InputStreamReader(stream));
-        try {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Matcher setCommand = SET_COMMAND_PATTERN.matcher(line);
-                if (setCommand.matches()) {
-                    String key = setCommand.group(1);
-                    String value = setCommand.group(2);
-                    if (key.startsWith("BDS") || key.startsWith("CG_") ||
-                            key.startsWith("Framework")) {
-                        variables.put(key, value);
-                    }
-                }
-            }
-        } finally {
-            reader.close();
-        }
-        return variables;
-    }
-
-    /**
-     * Returns a {@link NodeSpecific} version of this object.
-     *
-     * @param node node for which the return value is specialized.
-     * @param listener a {@link TaskListener} object
-     * @return {@link NodeSpecific} copy of this object
-     * @throws IOException if an I/O exception has occurred
-     * @throws InterruptedException if interrupted
-     */
-    @Override
-    public BDSInstallation forNode(Node node, TaskListener listener)
-            throws IOException, InterruptedException {
-        return new BDSInstallation(getName(), translateFor(node, listener),
-                getProperties().toList());
-    }
-
-    /**
-     * Returns an {@link EnvironmentSpecific} version of this object.
-     *
-     * @param environment environment for which the return value is
-     * specialized.
-     * @return {@link EnvironmentSpecific} copy of this object
-     */
-    @Override
-    public BDSInstallation forEnvironment(EnvVars environment) {
-        return new BDSInstallation(getName(), environment.expand(getHome()),
-                getProperties().toList());
-    }
-
-    /**
-     * Describes {@link BDSInstallation}.
+     * Describes deprecated {@link BDSInstallation}.
      *
      * @author Kaz Nishimura
      * @since 2.0
      */
-    @Extension
     public static class BDSInstallationDescriptor
             extends ToolDescriptor<BDSInstallation> {
 
         public BDSInstallationDescriptor() {
+            Hudson application = Hudson.getInstance();
+            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor descriptor
+                    = application.getDescriptorByType(
+                            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor.class);
             // {@link ToolDescriptor#installations} can be <code>null</code>
             // when there is no configuration
             setInstallations(new BDSInstallation[0]);
             load();
-        }
-
-        /**
-         * Finds a {@link BDSInstallation} object by its name.
-         * If there is nothing found, it returns <code>null</code>.
-         *
-         * @param name name of a installation to find
-         * @return a {@link BDSInstallation} object, or <code>null</code>
-         */
-        public BDSInstallation getInstallation(String name) {
-            for (BDSInstallation i : getInstallations()) {
-                if (i.getName().equals(name)) {
-                    return i;
+            if (descriptor.getInstallations().length == 0) {
+                    BDSInstallation[] installations = getInstallations();
+                org.vx68k.hudson.plugin.bds.BDSInstallation[] newInstallations
+                        = new org.vx68k.hudson.plugin.bds.BDSInstallation[installations.length];
+                for (int i = 0; i != installations.length; ++i) {
+                    newInstallations[i] = installations[i].convert();
                 }
+                descriptor.setInstallations(newInstallations);
             }
-            return null;
         }
-
-        @Override
-        public boolean configure(StaplerRequest req, JSONObject json)
-                throws FormException {
-            boolean ready = super.configure(req, json);
-            if (ready) {
-                save();
-            }
-            return ready;
-        }
-
-//        @Override
-//        protected FormValidation checkHomeDirectory(File home) {
-//            File bin = new File(home, BIN_DIRECTORY_NAME);
-//            File batch = new File(bin, BATCH_FILE_NAME);
-//            if (!batch.isFile()) {
-//                return FormValidation.error(NOT_INSTALLATION_DIRECTORY);
-//            }
-//            return super.checkHomeDirectory(home);
-//        }
 
         /**
          * Returns the display name for {@link BDSInstallation}.
@@ -286,7 +97,7 @@ public class BDSInstallation extends ToolInstallation
          */
         @Override
         public String getDisplayName() {
-            return DISPLAY_NAME;
+            return "RAD Studio (deprecated)";
         }
     }
 }

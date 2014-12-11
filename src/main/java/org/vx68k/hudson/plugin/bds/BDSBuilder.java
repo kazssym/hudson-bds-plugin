@@ -37,8 +37,6 @@ import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.hudson.plugin.AbstractMsbuildBuilder;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
-import org.vx68k.jenkins.plugin.bds.BDSInstallation;
-import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 
 /**
  * Builds a RAD Studio project or project group.
@@ -90,7 +88,10 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
             throws IOException, InterruptedException {
         super.buildEnvVars(build, launcher, listener, environment);
 
-        Descriptor descriptor = (Descriptor) getDescriptor();
+        Hudson application = Hudson.getInstance();
+        BDSInstallation.Descriptor descriptor =
+                application.getDescriptorByType(
+                        BDSInstallation.Descriptor.class);
         Node node = Computer.currentComputer().getNode();
 
         BDSInstallation installation;
@@ -138,18 +139,16 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
             extends BuildStepDescriptor<Builder> {
 
         /**
-         * Just constructs this object.
-         */
-        public Descriptor() {
-        }
-
-        /**
          * Returns the {@link BDSInstallation} object identified by its name.
          *
          * @param name name of a RAD Studio installation
          * @return {@link BDSInstallation} object, or <code>null</code> if not
          * found
+         * @deprecated As of version 4.0, replaced by {@link
+         * org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor
+         * #getInstallation}
          */
+        @Deprecated
         public BDSInstallation getInstallation(String name) {
             for (BDSInstallation i : getInstallations()) {
                 if (i.getName().equals(name)) {
@@ -161,22 +160,33 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
 
         /**
          * Returns an array of {@link BDSInstallation}. This method uses
-         * {@link BDSInstallationDescriptor#getInstallations} to get the
+         * {@link org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor
+         * #getInstallations} to get the
          * installations.
          *
          * @return array of @link BDSInstallation}
+         * @deprecated As of version 4.0, replaced by {@link
+         * BDSInstallation.Descriptor#getInstallations}
          */
+        @Deprecated
         protected BDSInstallation[] getInstallations() {
             Hudson application = Hudson.getInstance();
-            return application.getDescriptorByType(
-                    BDSInstallationDescriptor.class).getInstallations();
+            BDSInstallation.Descriptor descriptor =
+                    application.getDescriptorByType(
+                            BDSInstallation.Descriptor.class);
+           return descriptor.getInstallations();
         }
 
         public ListBoxModel doFillInstallationNameItems() {
-            ListBoxModel items = new ListBoxModel();
+            Hudson application = Hudson.getInstance();
+            BDSInstallation.Descriptor descriptor =
+                    application.getDescriptorByType(
+                            BDSInstallation.Descriptor.class);
 
-            for (BDSInstallation i : getInstallations()) {
-                items.add(i.getName(), i.getName());
+            ListBoxModel items = new ListBoxModel();
+            for (BDSInstallation installation :
+                    descriptor.getInstallations()) {
+                items.add(installation.getName(), installation.getName());
             }
             return items;
         }
