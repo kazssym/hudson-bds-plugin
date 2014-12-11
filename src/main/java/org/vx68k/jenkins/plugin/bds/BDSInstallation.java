@@ -26,8 +26,8 @@ import hudson.model.Hudson;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
- * Deprecated RAD Studio installation.
- * This class is retained for backward compatibility.
+ * Deprecated RAD Studio installation.  This class is retained for backward
+ * compatibility.
  *
  * @author Kaz Nishimura
  * @since 1.0
@@ -46,6 +46,7 @@ public class BDSInstallation
      * @param home home directory (the value of <code>BDS</code>)
      * @param properties properties for {@link ToolInstallation}
      */
+    @DataBoundConstructor
     public BDSInstallation(String name, String home,
             List<? extends ToolProperty<?>> properties) {
         super(name, home, properties);
@@ -68,6 +69,7 @@ public class BDSInstallation
      * @author Kaz Nishimura
      * @since 2.0
      */
+    @Extension
     public static class BDSInstallationDescriptor
             extends ToolDescriptor<BDSInstallation> {
 

@@ -241,8 +241,9 @@ public class BDSInstallation extends ToolInstallation
          * Finds a {@link BDSInstallation} object by its name.
          * If there is nothing found, it returns <code>null</code>.
          *
-         * @param name name of a installation to find
-         * @return a {@link BDSInstallation} object, or <code>null</code>
+         * @param name name of a RAD Studio installation
+         * @return {@link BDSInstallation} object, or <code>null</code> if not
+         * found
          */
         public BDSInstallation getInstallation(String name) {
             for (BDSInstallation i : getInstallations()) {
