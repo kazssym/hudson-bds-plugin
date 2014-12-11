@@ -23,6 +23,7 @@ import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import hudson.model.Hudson;
+import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
  * Deprecated RAD Studio installation.
@@ -97,7 +98,7 @@ public class BDSInstallation
          */
         @Override
         public String getDisplayName() {
-            return "RAD Studio (deprecated)";
+            return "RAD Studio \u2013 " + Messages.getDeprecated();
         }
     }
 }
