@@ -138,45 +138,6 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
     public static final class Descriptor
             extends BuildStepDescriptor<Builder> {
 
-        /**
-         * Returns the {@link BDSInstallation} object identified by its name.
-         *
-         * @param name name of a RAD Studio installation
-         * @return {@link BDSInstallation} object, or <code>null</code> if not
-         * found
-         * @deprecated As of version 4.0, replaced by {@link
-         * org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor
-         * #getInstallation}
-         */
-        @Deprecated
-        public BDSInstallation getInstallation(String name) {
-            for (BDSInstallation i : getInstallations()) {
-                if (i.getName().equals(name)) {
-                    return i;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Returns an array of {@link BDSInstallation}. This method uses
-         * {@link org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor
-         * #getInstallations} to get the
-         * installations.
-         *
-         * @return array of @link BDSInstallation}
-         * @deprecated As of version 4.0, replaced by {@link
-         * BDSInstallation.Descriptor#getInstallations}
-         */
-        @Deprecated
-        protected BDSInstallation[] getInstallations() {
-            Hudson application = Hudson.getInstance();
-            BDSInstallation.Descriptor descriptor =
-                    application.getDescriptorByType(
-                            BDSInstallation.Descriptor.class);
-           return descriptor.getInstallations();
-        }
-
         public ListBoxModel doFillInstallationNameItems() {
             Hudson application = Hudson.getInstance();
             BDSInstallation.Descriptor descriptor =
