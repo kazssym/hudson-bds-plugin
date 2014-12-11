@@ -19,10 +19,12 @@
 package org.vx68k.jenkins.plugin.bds;
 
 import java.util.List;
+import hudson.Extension;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import hudson.model.Hudson;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
