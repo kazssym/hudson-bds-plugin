@@ -55,13 +55,13 @@ public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
     }
 
     /**
-     * Returns a new {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
-     * that has the same properties as this object.
+     * Converts this object to {@link
+     * org.vx68k.hudson.plugin.bds.BDSBuilder}.
      *
-     * @return new {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
+     * @return {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
      * @since 4.0
      */
-    protected org.vx68k.hudson.plugin.bds.BDSBuilder translate() {
+    protected org.vx68k.hudson.plugin.bds.BDSBuilder convert() {
         return new org.vx68k.hudson.plugin.bds.BDSBuilder(getProjectFile(),
                 getSwitches(), getInstallationName());
     }
@@ -84,7 +84,7 @@ public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
                 UnmarshallingContext context) {
             Object object = super.unmarshal(reader, context);
             if (object instanceof BDSBuilder) {
-                object = ((BDSBuilder) object).translate();
+                object = ((BDSBuilder) object).convert();
             }
             return object;
         }
