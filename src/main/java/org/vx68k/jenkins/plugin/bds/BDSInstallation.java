@@ -49,7 +49,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Configures RAD Studio installations for {@link BDSBuilder}.
+ * RAD Studio installation.
  *
  * @author Kaz Nishimura
  * @since 1.0
