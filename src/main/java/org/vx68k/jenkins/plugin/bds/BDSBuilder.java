@@ -25,10 +25,8 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import hudson.util.XStream2;
-import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 
@@ -79,15 +77,6 @@ public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
 
         public ConverterImpl(XStream2 xstream) {
             super(xstream);
-        }
-
-        @Override
-        public void marshal(Object object, HierarchicalStreamWriter writer,
-                MarshallingContext context) {
-            if (object instanceof BDSBuilder) {
-                object = ((BDSBuilder) object).translate();
-            }
-            super.marshal(object, writer, context);
         }
 
         @Override
