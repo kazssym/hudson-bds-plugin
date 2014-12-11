@@ -238,12 +238,10 @@ public class BDSInstallation extends ToolInstallation
         }
 
         /**
-         * Finds a {@link BDSInstallation} object by its name.
-         * If there is nothing found, it returns <code>null</code>.
+         * Returns a RAD Studio installation that has a specified name.
          *
          * @param name name of a RAD Studio installation
-         * @return {@link BDSInstallation} object, or <code>null</code> if not
-         * found
+         * @return RAD Studio installation, or <code>null</code> if not found
          */
         public BDSInstallation getInstallation(String name) {
             for (BDSInstallation i : getInstallations()) {
@@ -275,9 +273,9 @@ public class BDSInstallation extends ToolInstallation
 //        }
 
         /**
-         * Returns the display name for {@link BDSInstallation}.
+         * Returns the display name for RAD Studio installations.
          *
-         * @return display name for {@link BDSInstallation}
+         * @return display name for RAD Studio installations
          */
         @Override
         public String getDisplayName() {

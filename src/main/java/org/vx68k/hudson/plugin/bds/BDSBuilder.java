@@ -39,7 +39,7 @@ import org.vx68k.hudson.plugin.AbstractMsbuildBuilder;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
- * Builds a RAD Studio project or project group.
+ * RAD Studio project or project group builder.
  *
  * @author Kaz Nishimura
  * @since 4.0

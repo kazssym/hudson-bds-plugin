@@ -75,6 +75,12 @@ public class BDSInstallation
     public static class BDSInstallationDescriptor
             extends ToolDescriptor<BDSInstallation> {
 
+        /**
+         * Constructs this object and loads configured installations.  If
+         * [@link org.vx68k.huddson.plugin.bds.BDSInstallation.Descriptor}
+         * has no installations, this constructor also migrates all RAD
+         * Studio installations.
+         */
         public BDSInstallationDescriptor() {
             Hudson application = Hudson.getInstance();
             org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor descriptor
