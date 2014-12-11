@@ -90,7 +90,10 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
             throws IOException, InterruptedException {
         super.buildEnvVars(build, launcher, listener, environment);
 
-        Descriptor descriptor = (Descriptor) getDescriptor();
+        Hudson application = Hudson.getInstance();
+        BDSInstallationDescriptor descriptor =
+                application.getDescriptorByType(
+                        BDSInstallationDescriptor.class);
         Node node = Computer.currentComputer().getNode();
 
         BDSInstallation installation;
@@ -143,40 +146,16 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
         public Descriptor() {
         }
 
-        /**
-         * Returns the {@link BDSInstallation} object identified by its name.
-         *
-         * @param name name of a RAD Studio installation
-         * @return {@link BDSInstallation} object, or <code>null</code> if not
-         * found
-         */
-        public BDSInstallation getInstallation(String name) {
-            for (BDSInstallation i : getInstallations()) {
-                if (i.getName().equals(name)) {
-                    return i;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Returns an array of {@link BDSInstallation}. This method uses
-         * {@link BDSInstallationDescriptor#getInstallations} to get the
-         * installations.
-         *
-         * @return array of @link BDSInstallation}
-         */
-        protected BDSInstallation[] getInstallations() {
-            Hudson application = Hudson.getInstance();
-            return application.getDescriptorByType(
-                    BDSInstallationDescriptor.class).getInstallations();
-        }
-
         public ListBoxModel doFillInstallationNameItems() {
-            ListBoxModel items = new ListBoxModel();
+            Hudson application = Hudson.getInstance();
+            BDSInstallationDescriptor descriptor
+                    = application.getDescriptorByType(
+                            BDSInstallationDescriptor.class);
 
-            for (BDSInstallation i : getInstallations()) {
-                items.add(i.getName(), i.getName());
+            ListBoxModel items = new ListBoxModel();
+            for (BDSInstallation installation :
+                    descriptor.getInstallations()) {
+                items.add(installation.getName(), installation.getName());
             }
             return items;
         }
