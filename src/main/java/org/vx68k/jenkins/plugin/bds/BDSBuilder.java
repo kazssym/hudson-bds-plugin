@@ -113,7 +113,8 @@ public class BDSBuilder extends org.vx68k.hudson.plugin.bds.BDSBuilder {
             extends BuildStepDescriptor<Builder> {
 
         /**
-         * Returns a deprecated {@link BDSBuilder} object that has a specified name.
+         * Returns a deprecated {@link BDSBuilder} object that has a specified
+         * name.
          *
          * @param name name of a deprecated {@link BDSBuilder} object
          * @return deprecated {@link BDSBuilder}, or <code>null</code> if not

@@ -37,11 +37,9 @@ import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.hudson.plugin.AbstractMsbuildBuilder;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
-import org.vx68k.jenkins.plugin.bds.BDSInstallation;
-import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 
 /**
- * Builds a RAD Studio project or project group.
+ * RAD Studio project or project group builder.
  *
  * @author Kaz Nishimura
  * @since 4.0
@@ -91,9 +89,9 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
         super.buildEnvVars(build, launcher, listener, environment);
 
         Hudson application = Hudson.getInstance();
-        BDSInstallationDescriptor descriptor =
+        BDSInstallation.Descriptor descriptor =
                 application.getDescriptorByType(
-                        BDSInstallationDescriptor.class);
+                        BDSInstallation.Descriptor.class);
         Node node = Computer.currentComputer().getNode();
 
         BDSInstallation installation;
@@ -142,9 +140,9 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
 
         public ListBoxModel doFillInstallationNameItems() {
             Hudson application = Hudson.getInstance();
-            BDSInstallationDescriptor descriptor
-                    = application.getDescriptorByType(
-                            BDSInstallationDescriptor.class);
+            BDSInstallation.Descriptor descriptor =
+                    application.getDescriptorByType(
+                            BDSInstallation.Descriptor.class);
 
             ListBoxModel items = new ListBoxModel();
             for (BDSInstallation installation :
