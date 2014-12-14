@@ -26,10 +26,3 @@ along with this program.
                  "What is free software?"
 [GNU Affero General Public License]: <http://www.gnu.org/licenses/agpl.html>
 [Free Software Foundation]: <http://www.fsf.org/>
-
-## Installation
-
-You should be able to generate a HPI file from the source code as a [Maven][]
-project if you would like to do it yourself.
-
-[Maven]: <http://maven.apache.org/>
