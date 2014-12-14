@@ -1,19 +1,16 @@
 # READ ME
 
-This directory contains the source code for [RAD Studio Plugin][] for
-[Jenkins][] which allows users to build [RAD Studio][] projects or project
-groups.
+This directory contains the source code for [RAD Studio Plugin for Hudson][].
+It allows users to build [RAD Studio][] ([Delphi][] or [C++Builder][])
+projects or project groups in a job.
 
-Although RAD Studio projects can be built with more famous [MSBuild Plugin][],
-users must set version-specific environment variables by hand or by calling
-a batch file in each Jenkins project.
-This plugin will help users build (and test) their RAD Studio projects or
-project groups without such tricks.
+This program also has another edition [for Jenkins][].
 
-[RAD Studio Plugin]: <https://wiki.jenkins-ci.org/display/JENKINS/RAD+Studio+Plugin>
-[Jenkins]: <http://jenkins-ci.org/>
+[RAD Studio Plugin for Hudson]: <http://kazssym.bitbucket.org/hudson-bds-plugin/>
 [RAD Studio]: <http://www.embarcadero.com/products/rad-studio>
-[MSBuild Plugin]: <https://wiki.jenkins-ci.org/display/JENKINS/MSBuild+Plugin>
+[Delphi]: <http://www.embarcadero.com/products/delphi>
+[C++Builder]: <http://www.embarcadero.com/products/cbuilder>
+[For Jenkins]: <https://bitbucket.org/kazssym/jenkins-bds-plugin>
 
 ## License
 

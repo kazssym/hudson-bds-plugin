@@ -29,7 +29,8 @@
   <name>RAD Studio Plugin for Hudson</name>
   <version>4.0-SNAPSHOT</version>
   <description>
-    This plugin allows users to build RAD Studio projects or project groups.
+    This plugin allows users to build RAD Studio (Delphi or C++Builder)
+    projects or project groups in a job.
   </description>
   <url>http://kazssym.bitbucket.org/hudson-bds-plugin/</url>
   <issueManagement>

@@ -5,9 +5,8 @@
   Copying and distribution of this file, with or without modification, are
   permitted in any medium without royalty provided the copyright notice and
   this notice are preserved.  This file is offered as-is, without any warranty.
-
-  This view is used to render the installed plugins page.
 -->
 <div>
-  This plugin allows users to build RAD Studio projects or project groups.
+  This plugin allows users to build RAD Studio (Delphi or C++Builder) projects
+  or project groups in a job.
 </div>
