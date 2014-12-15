@@ -18,24 +18,15 @@
 
 package org.vx68k.hudson.plugin.bds;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Proc;
 import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
@@ -47,6 +38,7 @@ import hudson.tools.ToolProperty;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
  * RAD Studio installation.
@@ -62,45 +54,6 @@ public class BDSInstallation extends ToolInstallation
 
     private static final String BIN_DIRECTORY_NAME = "bin";
     private static final String BATCH_FILE_NAME = "rsvars.bat";
-
-    /**
-     * Pattern to match a <code>set</code> command.
-     */
-    private static final Pattern SET_COMMAND_PATTERN =
-            Pattern.compile("\\s*@?set\\s+([^=]+)=(.*)",
-                    Pattern.CASE_INSENSITIVE);
-
-    /**
-     * Read the RAD Studio environment variables from an input stream.
-     *
-     * @param stream input stream
-     * @return environment variables read from the input stream
-     * @throws IOException if an I/O exception has occurred
-     */
-    public static Map<String, String> readVariables(InputStream stream)
-            throws IOException {
-        Map<String, String> variables = new TreeMap<String, String>(
-                String.CASE_INSENSITIVE_ORDER);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                stream, "ISO-8859-1")); // TOOD: Handle OEM character set.
-        try {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Matcher setCommand = SET_COMMAND_PATTERN.matcher(line);
-                if (setCommand.matches()) {
-                    String key = setCommand.group(1);
-                    String value = setCommand.group(2);
-                    if (key.startsWith("BDS") || key.startsWith("CG_") ||
-                            key.startsWith("Framework")) {
-                        variables.put(key, value);
-                    }
-                }
-            }
-        } finally {
-            reader.close();
-        }
-        return variables;
-    }
 
     /**
      * Constructs this object with immutable properties.
@@ -140,50 +93,30 @@ public class BDSInstallation extends ToolInstallation
     /**
      * Reads the RAD Studio environment variables from the batch file which
      * initializes a RAD Studio Command Prompt.
-     * For a remote node, a <code>type</code> command will be used to read the
-     * file content.
      *
      * @param build {@link AbstractBuild} object
      * @param launcher {@link Launcher} object
-     * @param listener {@link BuildListener} object
+     * @param listener {@link TaskListener} object
      * @return environment variables read from the batch file
      * @throws IOException if an I/O exception has occurred
      * @throws InterruptedException if interrupted
      */
     public Map<String, String> readVariables(AbstractBuild<?, ?> build,
-            Launcher launcher, BuildListener listener)
+            Launcher launcher, TaskListener listener)
             throws IOException, InterruptedException {
-        InputStream batchStream;
-        FilePath batchFile = getBatchFile(launcher.getChannel());
-        if (batchFile.isRemote()) {
-            EnvVars environment = build.getEnvironment(listener);
-
-            String comspec = environment.get("COMSPEC");
-            if (comspec == null) {
-                listener.error("COMSPEC is not set: "
-                        + "this node is probably not Windows."); // TODO: I18N.
-                return null;
-            }
-
-            ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-
-            Launcher.ProcStarter shellStarter = launcher.launch();
-            shellStarter.envs(environment);
-            shellStarter.stdout(stdout);
-            shellStarter.stderr(listener.getLogger());
-            shellStarter.cmds(comspec, "/c", "type", batchFile.getRemote());
-
-            Proc shell = shellStarter.start();
-            if (shell.join() != 0) {
-                // Any error messages must already be printed.
-                return null;
-            }
-
-            batchStream = new ByteArrayInputStream(stdout.toByteArray());
-        } else {
-            batchStream = batchFile.read();
+        if (getHome().isEmpty()) {
+            listener.error(Messages.getHomeIsEmptyMessage());
+            return null;
         }
-        return readVariables(batchStream);
+
+        InputStream batchStream = BDSUtilities.getInputStream(build,
+                launcher, listener, getBatchFile(launcher.getChannel()));
+        if (batchStream == null) {
+            // Any error messages must already be printed.
+            return null;
+        }
+
+        return BDSUtilities.readVariables(batchStream);
     }
 
     /**

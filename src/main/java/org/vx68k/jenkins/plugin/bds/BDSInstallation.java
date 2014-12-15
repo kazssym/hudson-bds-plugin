@@ -18,8 +18,6 @@
 
 package org.vx68k.jenkins.plugin.bds;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -28,7 +26,6 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Proc;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.EnvironmentSpecific;
@@ -43,6 +40,7 @@ import hudson.tools.ToolProperty;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import org.vx68k.hudson.plugin.bds.BDSUtilities;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
@@ -54,6 +52,7 @@ import org.vx68k.hudson.plugin.bds.resources.Messages;
  * @deprecated As of version 4.0, replaced by {@link
  * org.vx68k.hudson.plugin.bds.BDSInstallation}
  */
+@Deprecated
 public class BDSInstallation extends ToolInstallation
         implements NodeSpecific<BDSInstallation>,
         EnvironmentSpecific<BDSInstallation> {
@@ -117,37 +116,19 @@ public class BDSInstallation extends ToolInstallation
     public Map<String, String> readVariables(AbstractBuild<?, ?> build,
             Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException {
-        InputStream batchStream;
-        FilePath batchFile = getBatchFile(launcher.getChannel());
-        if (batchFile.isRemote()) {
-            EnvVars environment = build.getEnvironment(listener);
-
-            String comspec = environment.get("COMSPEC");
-            if (comspec == null) {
-                listener.error("COMSPEC is not set: "
-                        + "this node is probably not Windows."); // TODO: I18N.
-                return null;
-            }
-
-            ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-
-            Launcher.ProcStarter shellStarter = launcher.launch();
-            shellStarter.envs(environment);
-            shellStarter.stdout(stdout);
-            shellStarter.stderr(listener.getLogger());
-            shellStarter.cmds(comspec, "/c", "type", batchFile.getRemote());
-
-            Proc shell = shellStarter.start();
-            if (shell.join() != 0) {
-                // Any error messages must already be printed.
-                return null;
-            }
-
-            batchStream = new ByteArrayInputStream(stdout.toByteArray());
-        } else {
-            batchStream = batchFile.read();
+        if (getHome().isEmpty()) {
+            listener.error(Messages.getHomeIsEmptyMessage());
+            return null;
         }
-        return readVariables(batchStream);
+
+        InputStream batchStream = BDSUtilities.getInputStream(build,
+                launcher, listener, getBatchFile(launcher.getChannel()));
+        if (batchStream == null) {
+            // Any error messages must already be printed.
+            return null;
+        }
+
+        return BDSUtilities.readVariables(batchStream);
     }
 
     /**
@@ -161,8 +142,7 @@ public class BDSInstallation extends ToolInstallation
      */
     protected Map<String, String> readVariables(InputStream stream)
             throws IOException {
-        return org.vx68k.hudson.plugin.bds.BDSInstallation.readVariables(
-                stream);
+        return BDSUtilities.readVariables(stream);
     }
 
     /**
