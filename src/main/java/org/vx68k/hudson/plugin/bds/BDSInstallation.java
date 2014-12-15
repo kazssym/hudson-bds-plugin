@@ -153,7 +153,7 @@ public class BDSInstallation extends ToolInstallation
     public Map<String, String> readVariables(AbstractBuild<?, ?> build,
             Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException {
-        InputStream batch;
+        InputStream batchStream;
         FilePath batchFile = getBatchFile(launcher.getChannel());
         if (batchFile.isRemote()) {
             EnvVars environment = build.getEnvironment(listener);
@@ -174,17 +174,16 @@ public class BDSInstallation extends ToolInstallation
             shellStarter.cmds(comspec, "/c", "type", batchFile.getRemote());
 
             Proc shell = shellStarter.start();
-            int status = shell.join();
-            if (status != 0) {
+            if (shell.join() != 0) {
                 // Any error messages must already be printed.
                 return null;
             }
 
-            batch = new ByteArrayInputStream(stdout.toByteArray());
+            batchStream = new ByteArrayInputStream(stdout.toByteArray());
         } else {
-            batch = batchFile.read();
+            batchStream = batchFile.read();
         }
-        return readVariables(batch);
+        return readVariables(batchStream);
     }
 
     /**
