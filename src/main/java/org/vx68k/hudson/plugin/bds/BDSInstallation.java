@@ -37,7 +37,6 @@ import hudson.Proc;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.EnvironmentSpecific;
-import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
@@ -48,7 +47,6 @@ import hudson.tools.ToolProperty;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
-import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 
 /**
  * RAD Studio installation.
@@ -71,6 +69,38 @@ public class BDSInstallation extends ToolInstallation
     private static final Pattern SET_COMMAND_PATTERN =
             Pattern.compile("\\s*@?set\\s+([^=]+)=(.*)",
                     Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Read the RAD Studio environment variables from an input stream.
+     *
+     * @param stream input stream
+     * @return environment variables read from the input stream
+     * @throws IOException if an I/O exception has occurred
+     */
+    public static Map<String, String> readVariables(InputStream stream)
+            throws IOException {
+        Map<String, String> variables = new TreeMap<String, String>(
+                String.CASE_INSENSITIVE_ORDER);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                stream, "ISO-8859-1")); // TOOD: Handle OEM character set.
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Matcher setCommand = SET_COMMAND_PATTERN.matcher(line);
+                if (setCommand.matches()) {
+                    String key = setCommand.group(1);
+                    String value = setCommand.group(2);
+                    if (key.startsWith("BDS") || key.startsWith("CG_") ||
+                            key.startsWith("Framework")) {
+                        variables.put(key, value);
+                    }
+                }
+            }
+        } finally {
+            reader.close();
+        }
+        return variables;
+    }
 
     /**
      * Constructs this object with immutable properties.
@@ -155,38 +185,6 @@ public class BDSInstallation extends ToolInstallation
             batch = batchFile.read();
         }
         return readVariables(batch);
-    }
-
-    /**
-     * Read the RAD Studio environment variables from an input stream.
-     *
-     * @param stream input stream
-     * @return environment variables read from the input stream
-     * @throws IOException if an I/O exception has occurred
-     */
-    protected Map<String, String> readVariables(InputStream stream)
-            throws IOException {
-        Map<String, String> variables =
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
-        BufferedReader reader =
-                new BufferedReader(new InputStreamReader(stream));
-        try {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Matcher setCommand = SET_COMMAND_PATTERN.matcher(line);
-                if (setCommand.matches()) {
-                    String key = setCommand.group(1);
-                    String value = setCommand.group(2);
-                    if (key.startsWith("BDS") || key.startsWith("CG_") ||
-                            key.startsWith("Framework")) {
-                        variables.put(key, value);
-                    }
-                }
-            }
-        } finally {
-            reader.close();
-        }
-        return variables;
     }
 
     /**
