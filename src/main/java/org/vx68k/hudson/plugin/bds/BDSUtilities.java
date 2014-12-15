@@ -79,6 +79,9 @@ public class BDSUtilities {
         } finally {
             reader.close();
         }
+        // RAD Studio XE2 and earlier does not set 'BDSINCLUDE'.
+        variables.putIfAbsent("BDSINCLUDE", variables.get("BDS") +
+                "\\include");
         return variables;
     }
 
