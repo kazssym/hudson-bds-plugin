@@ -116,6 +116,22 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>check-findbugs</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.eclipse.hudson.tools</groupId>
         <artifactId>maven-hpi-plugin</artifactId>
         <!-- Version 3.0.3 should resolve the build problem with Java 7. -->
