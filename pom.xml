@@ -35,7 +35,7 @@
   <url>http://kazssym.bitbucket.org/hudson-bds-plugin/</url>
   <issueManagement>
     <system>Bitbucket</system>
-    <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/issues</url>
+    <url>https://bitbucket.org/kazssym/hudson-bds-plugin/issues</url>
   </issueManagement>
   <developers>
     <developer>
@@ -52,10 +52,10 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</connection>
-    <developerConnection>scm:hg:https://bitbucket.org/kazssym/jenkins-bds-plugin</developerConnection>
+    <connection>scm:hg:https://bitbucket.org/kazssym/hudson-bds-plugin</connection>
+    <developerConnection>scm:hg:https://bitbucket.org/kazssym/hudson-bds-plugin</developerConnection>
     <tag>default</tag>
-    <url>https://bitbucket.org/kazssym/jenkins-bds-plugin/src</url>
+    <url>https://bitbucket.org/kazssym/hudson-bds-plugin/src</url>
   </scm>
   <build>
     <plugins>
