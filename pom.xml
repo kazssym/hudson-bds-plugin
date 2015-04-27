@@ -37,6 +37,7 @@
     <system>Bitbucket</system>
     <url>https://bitbucket.org/kazssym/hudson-bds-plugin/issues</url>
   </issueManagement>
+  <inceptionYear>2014</inceptionYear>
   <developers>
     <developer>
       <id>kazssym</id>
@@ -57,6 +58,9 @@
     <tag>default</tag>
     <url>https://bitbucket.org/kazssym/hudson-bds-plugin/src</url>
   </scm>
+  <organization>
+    <name>Kaz Nishimura</name>
+  </organization>
   <build>
     <plugins>
       <plugin>
