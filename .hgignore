@@ -1,7 +1,9 @@
-# Maven target directory:
+# .hgignore
+
+# Maven output files:
 ^target/
 
-# NetBeans local files:
+# NetBeans local configuration files:
 ^nb-
 
 # Backup and garbage files:
