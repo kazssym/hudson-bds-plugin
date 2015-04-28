@@ -49,6 +49,7 @@
     <license>
       <name>GNU Affero General Public License version 3 or later</name>
       <url>http://www.gnu.org/licenses/agpl.html</url>
+      <distribution>repo</distribution>
     </license>
   </licenses>
   <scm>
