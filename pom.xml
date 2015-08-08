@@ -56,7 +56,7 @@
     <url>https://bitbucket.org/kazssym/hudson-bds-plugin/src</url>
   </scm>
   <organization>
-    <name>Kaz Nishimura</name>
+    <name>Nishimura Software Studio</name>
   </organization>
   <build>
     <plugins>
