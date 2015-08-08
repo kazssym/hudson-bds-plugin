@@ -23,7 +23,7 @@
     <version>3.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.vx68k.hudson.plugin</groupId>
+  <groupId>org.hudsonci.plugins</groupId>
   <artifactId>bds-plugin</artifactId>
   <packaging>hpi</packaging>
   <name>RAD Studio Plugin for Hudson</name>
