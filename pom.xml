@@ -59,22 +59,40 @@
     <name>Nishimura Software Studio</name>
   </organization>
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.10.3</version>
+          <configuration>
+            <links>
+              <link>http://hudson-ci.org/javadoc/</link>
+            </links>
+            <detectLinks>true</detectLinks>
+            <locale>en_US</locale>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>3.0.0</version>
+          <configuration>
+            <xmlOutput>true</xmlOutput>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.hudson.tools</groupId>
+          <artifactId>maven-hpi-plugin</artifactId>
+          <!-- Version 3.0.3 should resolve the build problem with Java 7. -->
+          <version>3.0.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <links>
-            <link>http://hudson-ci.org/javadoc/</link>
-            <link>http://stapler.kohsuke.org/apidocs/</link>
-          </links>
-          <locale>en_US</locale>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>check-findbugs</id>
@@ -83,15 +101,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <xmlOutput>true</xmlOutput>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.hudson.tools</groupId>
-        <artifactId>maven-hpi-plugin</artifactId>
-        <!-- Version 3.0.3 should resolve the build problem with Java 7. -->
-        <version>3.0.3</version>
       </plugin>
     </plugins>
   </build>
