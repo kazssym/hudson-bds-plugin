@@ -187,6 +187,13 @@
       </distributionManagement>
     </profile>
   </profiles>
+  <dependencies>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+  </dependencies>
   <properties>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <hudsonTags>builder</hudsonTags>
