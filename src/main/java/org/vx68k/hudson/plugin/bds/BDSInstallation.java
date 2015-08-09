@@ -1,6 +1,6 @@
 /*
  * BDSInstallation
- * Copyright (C) 2014 Kaz Nishimura
+ * Copyright (C) 2014-2015 Nishimura Software Studio
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by the
@@ -22,12 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.EnvironmentSpecific;
+import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
@@ -55,6 +57,9 @@ public class BDSInstallation extends ToolInstallation
     private static final String BIN_DIRECTORY_NAME = "bin";
     private static final String BATCH_FILE_NAME = "rsvars.bat";
 
+    @Inject
+    private static Hudson hudson;
+
     /**
      * Constructs this object with immutable properties.
      *
@@ -66,6 +71,30 @@ public class BDSInstallation extends ToolInstallation
     public BDSInstallation(String name, String home,
             List<? extends ToolProperty<?>> properties) {
         super(name, home, properties);
+    }
+
+    /**
+     * Returns the {@link Hudson} object.
+     *
+     * @return {@link Hudson} object
+     */
+    protected static Hudson getHudson() {
+        if (hudson == null) {
+            // The injection did not work.
+            return Hudson.getInstance();
+        }
+        return hudson;
+    }
+
+    /**
+     * Returns an array of RAD Studio installations.
+     *
+     * @return array of RAD Studio installations
+     */
+    public static BDSInstallation[] getInstallations() {
+        Descriptor descriptor = getHudson().getDescriptorByType(
+                Descriptor.class);
+        return descriptor.getInstallations();
     }
 
     /**
