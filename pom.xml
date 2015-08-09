@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.eclipse.hudson.plugins</groupId>
     <artifactId>hudson-plugin-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.hudsonci.plugins</groupId>
@@ -80,12 +80,6 @@
           <configuration>
             <xmlOutput>true</xmlOutput>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.eclipse.hudson.tools</groupId>
-          <artifactId>maven-hpi-plugin</artifactId>
-          <!-- Version 3.0.3 should resolve the build problem with Java 7. -->
-          <version>3.0.3</version>
         </plugin>
       </plugins>
     </pluginManagement>
