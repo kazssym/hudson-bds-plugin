@@ -35,7 +35,6 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.vx68k.hudson.plugin.AbstractMsbuildBuilder;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**

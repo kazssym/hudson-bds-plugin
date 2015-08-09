@@ -31,7 +31,7 @@ import hudson.util.XStream2;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.vx68k.hudson.plugin.AbstractMsbuildBuilder;
+import org.vx68k.hudson.plugin.bds.AbstractMsbuildBuilder;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 
@@ -82,7 +82,7 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
      */
     protected org.vx68k.hudson.plugin.bds.BDSBuilder convert() {
         return new org.vx68k.hudson.plugin.bds.BDSBuilder(getProjectFile(),
-                getSwitches(), getInstallationName());
+                getOptions(), getInstallationName());
     }
 
     /**

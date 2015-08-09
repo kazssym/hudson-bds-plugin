@@ -1,6 +1,6 @@
 /*
  * AbstractMsbuildBuilder
- * Copyright (C) 2014 Kaz Nishimura
+ * Copyright (C) 2014-2015 Nishimura Software Studio
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by the
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.vx68k.hudson.plugin;
+package org.vx68k.hudson.plugin.bds;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -26,7 +26,6 @@ import hudson.Launcher;
 import hudson.Proc;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
@@ -45,17 +44,17 @@ public abstract class AbstractMsbuildBuilder extends Builder {
     protected static final String MSBUILD_FILE_NAME = "MSBuild.exe";
 
     private final String projectFile;
-    private final String switches;
+    private final String options;
 
     /**
      * Constructs this object and Sets the immutable properties.
      *
      * @param projectFile name of a MSBuild project file
-     * @param switches command-line switches
+     * @param options command-line options
      */
-    protected AbstractMsbuildBuilder(String projectFile, String switches) {
+    protected AbstractMsbuildBuilder(String projectFile, String options) {
         this.projectFile = projectFile;
-        this.switches = switches;
+        this.options = options;
     }
 
     /**
@@ -68,61 +67,63 @@ public abstract class AbstractMsbuildBuilder extends Builder {
     }
 
     /**
-     * Returns the command-line switches passed to the constructor.
+     * Returns the command-line options passed to the constructor.
      *
-     * @return command-line switches
+     * @return command-line options
      */
-    public String getSwitches() {
-        return switches;
-    }
-
-    /**
-     * Builds environment variables for this object.  This method shall be
-     * overridden in subclasses if necessary.
-     *
-     * @param build {@link AbstractBuild} object
-     * @param launcher {@link Launcher} object
-     * @param listener {@link BuildListener} object
-     * @param environment environment variables to which new ones are added
-     * @throws IOException if an I/O exception has occurred
-     * @throws InterruptedException if interrupted
-     */
-    protected void buildEnvVars(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener, EnvVars environment)
-            throws IOException, InterruptedException {
+    public String getOptions() {
+        return options;
     }
 
     /**
      * Returns the file path to a MSBuild executable.
      *
      * @param channel {@link VirtualChannel} object for {@link FilePath}
-     * @param environment environment variables
+     * @param env environment variables
      * @return file path to a MSBuild executable, or <code>null</code> if it
-     * cannot be determined
+     * could not be determined
      */
-    protected abstract FilePath getMsbuildPath(VirtualChannel channel,
-            EnvVars environment);
+    protected abstract FilePath getMsbuildPath(
+            VirtualChannel channel, EnvVars env);
 
     /**
-     * Performs this build step.
+     * Builds environment variables for this object.  This method shall be
+     * overridden in subclasses if necessary.
      *
-     * @param build {@link AbstractBuild} object
+     * @param build current build
      * @param launcher {@link Launcher} object
-     * @param listener {@link TaskListener} object
-     * @return <code>true</code> if the current build can be continued.
+     * @param listener {@link BuildListener} object
+     * @param environment environment variables to which new ones are added
      * @throws IOException if an I/O exception has occurred
      * @throws InterruptedException if interrupted
      */
-    @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener) throws IOException, InterruptedException {
-        EnvVars environment = build.getEnvironment(listener);
-        buildEnvVars(build, launcher, listener, environment);
-        // Build variables overrides others.
-        environment.putAll(build.getBuildVariables());
+    protected void buildEnvVars(
+            AbstractBuild<?, ?> build, Launcher launcher,
+            BuildListener listener, EnvVars environment)
+            throws IOException, InterruptedException {
+    }
 
-        FilePath msbuildPath = getMsbuildPath(launcher.getChannel(),
-                environment);
+    /**
+     * Performs the build step.
+     *
+     * @param build current build
+     * @param launcher {@link Launcher} object
+     * @param listener {@link BuildListener} object
+     * @return <code>true</code> if the current build can be continued, or
+     * <code>false</code> otherwise
+     * @throws IOException if an I/O exception has occurred
+     * @throws InterruptedException if this thread has been interrupted
+     */
+    @Override
+    public boolean perform(
+            AbstractBuild<?, ?> build, Launcher launcher,
+            BuildListener listener) throws IOException, InterruptedException {
+        EnvVars env = build.getEnvironment(listener);
+        buildEnvVars(build, launcher, listener, env);
+        // Build variables overrides others.
+        env.putAll(build.getBuildVariables());
+
+        FilePath msbuildPath = getMsbuildPath(launcher.getChannel(), env);
         if (msbuildPath == null) {
             listener.fatalError(
                     "A MSBuild executable could not be determined."); // TODO: I18N.
@@ -130,19 +131,23 @@ public abstract class AbstractMsbuildBuilder extends Builder {
         }
 
         Launcher.ProcStarter msbuildStarter = launcher.launch();
-        msbuildStarter.envs(environment);
+        msbuildStarter.envs(env);
+        msbuildStarter.pwd(build.getWorkspace());
         msbuildStarter.stdout(listener.getLogger());
         msbuildStarter.stderr(listener.getLogger());
-        msbuildStarter.pwd(build.getWorkspace());
 
         ArgumentListBuilder args = new ArgumentListBuilder(
                 msbuildPath.getRemote());
-        StringTokenizer tokenizer = new StringTokenizer(getSwitches());
-        while (tokenizer.hasMoreTokens()) {
-            args.add(environment.expand(tokenizer.nextToken()));
+        String projectFile = getProjectFile();
+        StringTokenizer options = new StringTokenizer(getOptions());
+        while (options.hasMoreTokens()) {
+            String option = env.expand(options.nextToken());
+            // TODO: Check every option starts with '/'.
+            args.add(option);
         }
-        if (!getProjectFile().isEmpty()) {
-            args.add(environment.expand(getProjectFile()));
+        if (!projectFile.isEmpty()) {
+            // TODO: Check the project file exists.
+            args.add(env.expand(getProjectFile()));
         }
         msbuildStarter.cmds(args.toList());
 
