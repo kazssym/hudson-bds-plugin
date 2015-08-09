@@ -138,16 +138,15 @@ public abstract class AbstractMsbuildBuilder extends Builder {
 
         ArgumentListBuilder args = new ArgumentListBuilder(
                 msbuildPath.getRemote());
-        String projectFile = getProjectFile();
-        StringTokenizer options = new StringTokenizer(getOptions());
-        while (options.hasMoreTokens()) {
-            String option = env.expand(options.nextToken());
+        StringTokenizer optionsTokenizer = new StringTokenizer(options);
+        while (optionsTokenizer.hasMoreTokens()) {
+            String option = env.expand(optionsTokenizer.nextToken());
             // TODO: Check every option starts with '/'.
             args.add(option);
         }
         if (!projectFile.isEmpty()) {
             // TODO: Check the project file exists.
-            args.add(env.expand(getProjectFile()));
+            args.add(env.expand(projectFile));
         }
         msbuildStarter.cmds(args.toList());
 
