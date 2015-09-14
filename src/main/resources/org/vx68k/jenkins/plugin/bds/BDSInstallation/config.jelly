@@ -18,10 +18,10 @@
 -->
 <?jelly escape-by-default="true"?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  <j:if test="${!empty(descriptor.installations)}">
-    <f:section title="${descriptor.displayName}">
-      <f:optionalBlock title="${%Delete all deprecated RAD Studio installations}"
-                       field="deleteAll" value="true"/>
-    </f:section>
-  </j:if>
+  <f:entry title="${%Name}" field="name">
+    <f:textbox/>
+  </f:entry>
+  <f:entry title="${%Installation directory}" field="home">
+    <f:textbox/>
+  </f:entry>
 </j:jelly>
