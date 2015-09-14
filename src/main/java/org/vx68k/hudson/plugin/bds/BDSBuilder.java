@@ -49,15 +49,14 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
 
     /**
      * Constructs this object and sets the immutable properties.
-     *
      * @param projectFile name of a MSBuild project file
-     * @param switches command-line switches
+     * @param options command-line options
      * @param installationName name of a RAD Studio installation
      */
     @DataBoundConstructor
-    public BDSBuilder(String projectFile, String switches,
+    public BDSBuilder(String projectFile, String options,
             String installationName) {
-        super(projectFile, switches);
+        super(projectFile, options);
         this.installationName = installationName;
     }
 

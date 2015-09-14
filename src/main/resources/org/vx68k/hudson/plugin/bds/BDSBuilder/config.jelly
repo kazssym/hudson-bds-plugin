@@ -24,7 +24,7 @@
   <f:entry title="${%Project file}" field="projectFile">
     <f:textbox/>
   </f:entry>
-  <f:entry title="${%Switches}" field="switches">
+  <f:entry title="${%Options}" field="options">
     <f:expandableTextbox/>
   </f:entry>
 </j:jelly>
