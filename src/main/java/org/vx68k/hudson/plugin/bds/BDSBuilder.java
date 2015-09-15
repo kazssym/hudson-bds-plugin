@@ -28,7 +28,6 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
-import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
@@ -38,8 +37,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
- * RAD Studio project or project group builder.
- *
+ * Builder for RAD Studio project or project group.
  * @author Kaz Nishimura
  * @since 4.0
  */
@@ -86,22 +84,20 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
             throws IOException, InterruptedException {
         super.buildEnvVars(build, launcher, listener, environment);
 
-        Hudson application = Hudson.getInstance();
-        BDSInstallation.Descriptor descriptor =
-                application.getDescriptorByType(
-                        BDSInstallation.Descriptor.class);
         Node node = Computer.currentComputer().getNode();
 
-        BDSInstallation installation;
-        installation = descriptor.getInstallation(getInstallationName());
-        installation = installation.forNode(node, listener);
-        installation = installation.forEnvironment(environment);
+        BDSInstallation installation =
+                BDSInstallation.getInstallation(installationName);
+        if (installation != null) {
+            installation = installation.forNode(node, listener);
+            installation = installation.forEnvironment(environment);
 
-        Map<String, String> variables =
-                 installation.readVariables(build, launcher, listener);
-        // Any error messages shall already be printed.
-        if (variables != null) {
-            environment.putAll(variables);
+            Map<String, String> variables =
+                     installation.readVariables(build, launcher, listener);
+            // Any error messages shall already be printed.
+            if (variables != null) {
+                environment.putAll(variables);
+            }
         }
     }
 
@@ -128,7 +124,6 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
 
     /**
      * Describes {@link BDSBuilder}.
-     *
      * @author Kaz Nishimura
      * @since 4.0
      */
@@ -137,15 +132,9 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
             extends BuildStepDescriptor<Builder> {
 
         public ListBoxModel doFillInstallationNameItems() {
-            Hudson application = Hudson.getInstance();
-            BDSInstallation.Descriptor descriptor =
-                    application.getDescriptorByType(
-                            BDSInstallation.Descriptor.class);
-
             ListBoxModel items = new ListBoxModel();
-            for (BDSInstallation installation :
-                    descriptor.getInstallations()) {
-                items.add(installation.getName(), installation.getName());
+            for (BDSInstallation i : BDSInstallation.getInstallations()) {
+                items.add(i.getName(), i.getName());
             }
             return items;
         }

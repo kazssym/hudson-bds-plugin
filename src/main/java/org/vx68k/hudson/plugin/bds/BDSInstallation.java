@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -44,7 +43,6 @@ import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
  * RAD Studio installation.
- *
  * @author Kaz Nishimura
  * @since 4.0
  */
@@ -52,13 +50,10 @@ public class BDSInstallation extends ToolInstallation
         implements NodeSpecific<BDSInstallation>,
         EnvironmentSpecific<BDSInstallation> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 4L;
 
     private static final String BIN_DIRECTORY_NAME = "bin";
     private static final String BATCH_FILE_NAME = "rsvars.bat";
-
-    @Inject
-    private static Hudson hudson;
 
     /**
      * Constructs this object with immutable properties.
@@ -74,27 +69,26 @@ public class BDSInstallation extends ToolInstallation
     }
 
     /**
-     * Returns the {@link Hudson} object.
-     *
-     * @return {@link Hudson} object
+     * Returns the array of the RAD Studio installations.
+     * @return array of the RAD Studio installations
      */
-    protected static Hudson getHudson() {
-        if (hudson == null) {
-            // The injection did not work.
-            return Hudson.getInstance();
-        }
-        return hudson;
+    public static BDSInstallation[] getInstallations() {
+        return Descriptor.getDescriptor().getInstallations();
     }
 
     /**
-     * Returns an array of RAD Studio installations.
-     *
-     * @return array of RAD Studio installations
+     * Returns the RAD Studio installation identified by a name.
+     * @param name name of the RAD Studio installation
+     * @return RAD Studio installation, or <code>null</code> if no installation
+     * was found
      */
-    public static BDSInstallation[] getInstallations() {
-        Descriptor descriptor = getHudson().getDescriptorByType(
-                Descriptor.class);
-        return descriptor.getInstallations();
+    public static BDSInstallation getInstallation(String name) {
+        for (BDSInstallation i : getInstallations()) {
+            if (i.getName() != null && i.getName().equals(name)) {
+                return i;
+            }
+        }
+        return null;
     }
 
     /**
@@ -179,7 +173,6 @@ public class BDSInstallation extends ToolInstallation
 
     /**
      * Describes {@link BDSInstallation}.
-     *
      * @author Kaz Nishimura
      */
     @Extension
@@ -191,24 +184,17 @@ public class BDSInstallation extends ToolInstallation
          */
         public Descriptor() {
             // {@link ToolDescriptor#installations} can be <code>null</code>
-            // when there is no configuration
+            // when there is no configuration.
             setInstallations(new BDSInstallation[0]);
             load();
         }
 
         /**
-         * Returns a RAD Studio installation that has a specified name.
-         *
-         * @param name name of a RAD Studio installation
-         * @return RAD Studio installation, or <code>null</code> if not found
+         * Return the {@link Descriptor} instance.
+         * @return {@link Descriptor} instance
          */
-        public BDSInstallation getInstallation(String name) {
-            for (BDSInstallation i : getInstallations()) {
-                if (i.getName().equals(name)) {
-                    return i;
-                }
-            }
-            return null;
+        public static Descriptor getDescriptor() {
+            return Hudson.getInstance().getDescriptorByType(Descriptor.class);
         }
 
         @Override
