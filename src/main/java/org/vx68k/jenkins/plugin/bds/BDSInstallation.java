@@ -187,8 +187,7 @@ public class BDSInstallation extends ToolInstallation
     }
 
     /**
-     * Describes deprecated {@link BDSInstallation}.
-     *
+     * Describes {@link org.vx68k.jenkins.plugin.bds.BDSInstallation}.
      * @author Kaz Nishimura
      * @since 2.0
      */
