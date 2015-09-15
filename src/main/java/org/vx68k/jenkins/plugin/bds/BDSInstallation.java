@@ -197,14 +197,6 @@ public class BDSInstallation extends ToolInstallation
             extends ToolDescriptor<BDSInstallation> {
 
         /**
-         * Constructs this object and loads configured installations.  If
-         * [@link org.vx68k.huddson.plugin.bds.BDSInstallation.Descriptor}
-         * has no installations, this constructor also migrates all RAD
-         * Studio installations.
-         */
-        private static final String DELETE_ALL_KEY = "deleteAll";
-
-        /**
          * Constructs this object and loads configured installations.  In
          * addition, if {@link
          * org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor} has no
@@ -251,11 +243,11 @@ public class BDSInstallation extends ToolInstallation
         @Override
         public boolean configure(StaplerRequest request, JSONObject json)
                 throws FormException {
-            if (json.has(DELETE_ALL_KEY)) {
-                setInstallations();
+            boolean ready = super.configure(request, json);
+            if (ready) {
                 save();
             }
-            return true;
+            return ready;
         }
 
         /**
