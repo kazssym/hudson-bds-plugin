@@ -1,6 +1,6 @@
 /*
- * BDSBuilder for backward compatibility
- * Copyright (C) 2014 Kaz Nishimura
+ * BDSBuilder (deprecated)
+ * Copyright (C) 2014-2025 Nishimura Software Studio
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by the
@@ -18,98 +18,84 @@
 
 package org.vx68k.jenkins.plugin.bds;
 
-import hudson.EnvVars;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.model.AbstractProject;
-import hudson.model.Hudson;
-import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
-import hudson.util.ListBoxModel;
 import hudson.util.XStream2;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.vx68k.hudson.plugin.bds.AbstractMsbuildBuilder;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
-import org.vx68k.jenkins.plugin.bds.BDSInstallation.BDSInstallationDescriptor;
 
 /**
- * Deprecated RAD Studio builder.  This class is retained for backward
- * compatibility.
- *
+ * Deprecated builder for RAD Studio projects and project groups.
+ * This class is retained for backward compatibility.
  * @author Kaz Nishimura
  * @since 2.0
- * @deprecated As of version 4.0, replaced by {@link
- * org.vx68k.hudson.plugin.bds.BDSBuilder}.
+ * @deprecated As of version 4.0, replaced by
+ * {@link org.vx68k.hudson.plugin.bds.BDSBuilder}.
  */
 @Deprecated
-public class BDSBuilder extends AbstractMsbuildBuilder {
+public class BDSBuilder extends Builder {
 
+    private final String projectFile;
+    private final String switches;
     private final String installationName;
 
     /**
-     * Constructs this object with immutable properties.
-     *
-     * @param projectFile name of a MSBuild project file
-     * @param switches command-line switches
-     * @param installationName name of a RAD Studio installation
+     * Constructs this object with property values.
+     * @param projectFile name of the MSBuild project file
+     * @param switches command-line options for MSBuild
+     * @param installationName name of the RAD Studio installation to use
      */
     @DataBoundConstructor
-    public BDSBuilder(String projectFile, String switches,
-            String installationName) {
-        super(projectFile, switches);
+    public BDSBuilder(
+            String projectFile, String switches, String installationName) {
+        this.projectFile = projectFile;
+        this.switches = switches;
         this.installationName = installationName;
     }
 
     /**
-     * Returns the name of the RAD Studio installation passed to the
-     * constructor.
-     *
-     * @return name of the RAD Studio installation
+     * Returns the name of the MSBuild project file.
+     * @return name of the MSBuild project file
+     * @since 4.0
+     */
+    public String getProjectFile() {
+        return projectFile;
+    }
+
+    /**
+     * Returns the command-line options for MSBuild.
+     * @return command-line options for MSBuild
+     * @since 4.0
+     */
+    public String getSwitches() {
+        return switches;
+    }
+
+    /**
+     * Returns the RAD Studio installation to use.
+     * @return RAD Studio installation to use
      */
     public String getInstallationName() {
         return installationName;
     }
 
     /**
-     * Converts this object to {@link
-     * org.vx68k.hudson.plugin.bds.BDSBuilder}.
-     *
-     * @return {@link org.vx68k.hudson.plugin.bds.BDSBuilder} object
+     * Converts this object to
+     * {@link org.vx68k.hudson.plugin.bds.BDSBuilder}.
+     * @return {@link org.vx68k.hudson.plugin.bds.BDSBuilder} instance
      * @since 4.0
      */
     protected org.vx68k.hudson.plugin.bds.BDSBuilder convert() {
-        return new org.vx68k.hudson.plugin.bds.BDSBuilder(getProjectFile(),
-                getOptions(), getInstallationName());
+        return new org.vx68k.hudson.plugin.bds.BDSBuilder(
+                projectFile, switches, installationName);
     }
 
     /**
-     * Returns the file path to the MSBuild executable used by RAD Studio.
-     *
-     * @param channel {@link VirtualChannel} object for {@link FilePath}
-     * @param environment environment variables
-     * @return file path to a MSBuild executable, or <code>null</code> if it
-     * cannot be determined
-     * @since 4.0
-     */
-    @Override
-    protected FilePath getMsbuildPath(VirtualChannel channel,
-            EnvVars environment) {
-        String frameworkDir = environment.get("FrameworkDir");
-        if (frameworkDir == null) {
-            return null;
-        }
-
-        // RAD Stduio sets FrameworkDir including FrameworkVersion.
-        FilePath msbuildPath = new FilePath(channel, frameworkDir);
-        return new FilePath(msbuildPath, MSBUILD_FILE_NAME);
-    }
-
-    /**
-     * Converter to unmarshal old data into the new class.
-     *
+     * Converter from {@link BDSBuilder} configurations to new ones.
      * @author Kaz Nishimura
      * @since 4.0
      */
@@ -121,7 +107,8 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
         }
 
         @Override
-        public Object unmarshal(HierarchicalStreamReader reader,
+        public Object unmarshal(
+                HierarchicalStreamReader reader,
                 UnmarshallingContext context) {
             Object object = super.unmarshal(reader, context);
             if (object instanceof BDSBuilder) {
@@ -132,20 +119,18 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
 
         /**
          * Does nothing.
-         *
-         * @param object deprecated {@link BDSBuilder} object
-         * @param context {@link UnmarshallingContext} object
+         * @param object {@link BDSBuilder} instance
+         * @param context {@link UnmarshallingContext} instance
          */
         @Override
-        protected void callback(BDSBuilder object,
-                UnmarshallingContext context) {
+        protected void callback(
+                BDSBuilder object, UnmarshallingContext context) {
         }
     }
 
     /**
-     * Describes deprecated {@link BDSBuilder}. This class is retained for
-     * backward compatibility.
-     *
+     * Describes {@link BDSBuilder}.
+     * This class is retained for backward compatibility.
      * @author Kaz Nishimura
      * @since 2.0
      */
@@ -154,57 +139,8 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
             extends BuildStepDescriptor<Builder> {
 
         /**
-         * Returns a deprecated RAD Studio builder that has a specified
-         * name.
-         *
-         * @param name name of a deprecated RAD Sdutio installation
-         * @return deprecated RAD Studio installation, or <code>null</code> if
-         * not found
-         * @since 3.0
-         * @deprecated As of version 4.0, replaced by {@link
-         * BDSInstallationDescriptor#getInstallation}
-         */
-        @Deprecated
-        public BDSInstallation getInstallation(String name) {
-            for (BDSInstallation i : getInstallations()) {
-                if (i.getName().equals(name)) {
-                    return i;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Returns all deprecated RAD Studio installations.
-         * This method uses {@link BDSInstallationDescriptor#getInstallations}
-         * to get the installations.
-         *
-         * @return all deprecated RAD Studio installations
-         * @since 3.0
-         * @deprecated As of version 4.0, replaced by {@link
-         * BDSInstallationDescriptor#getInstallations}
-         */
-        @Deprecated
-        protected BDSInstallation[] getInstallations() {
-            Hudson application = Hudson.getInstance();
-            return application.getDescriptorByType(
-                    BDSInstallationDescriptor.class).getInstallations();
-        }
-
-        public ListBoxModel doFillInstallationNameItems() {
-            ListBoxModel items = new ListBoxModel();
-
-            for (BDSInstallation i : getInstallations()) {
-                items.add(i.getName(), i.getName());
-            }
-            return items;
-        }
-
-        /**
-         * Returns <code>false</code> to make deprecated RAD Studio builders
-         * hidden from users.
-         *
-         * @param type {@link Class} object of projects.
+         * Returns <code>false</code> to make {@link BDSBuilder} invisible.
+         * @param type project type
          * @return <code>false</code>
          */
         @Override
@@ -213,8 +149,7 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
         }
 
         /**
-         * Returns the display name for deprecated RAD Studio builders.
-         *
+         * Returns the display name for {@link BDSBuilder}.
          * @return display name for deprecated RAD Studio builders
          */
         @Override
