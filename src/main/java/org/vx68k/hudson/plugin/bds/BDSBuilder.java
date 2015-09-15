@@ -1,6 +1,6 @@
 /*
  * BDSBuilder
- * Copyright (C) 2014 Kaz Nishimura
+ * Copyright (C) 2014-2015 Nishimura Software Studio
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by the
@@ -37,7 +37,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.hudson.plugin.bds.resources.Messages;
 
 /**
- * Builder for RAD Studio project or project group.
+ * Builder for RAD Studio projects and project groups.
  * @author Kaz Nishimura
  * @since 4.0
  */
@@ -46,10 +46,10 @@ public class BDSBuilder extends AbstractMsbuildBuilder {
     private final String installationName;
 
     /**
-     * Constructs this object and sets the immutable properties.
-     * @param projectFile name of a MSBuild project file
-     * @param options command-line options
-     * @param installationName name of a RAD Studio installation
+     * Constructs this object with property values.
+     * @param projectFile name of the MSBuild project file
+     * @param options command-line options for MSBuild
+     * @param installationName name of the RAD Studio installation to use
      */
     @DataBoundConstructor
     public BDSBuilder(String projectFile, String options,
