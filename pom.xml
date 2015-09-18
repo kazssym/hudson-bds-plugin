@@ -196,6 +196,7 @@
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <hudsonTags>builder</hudsonTags>
   </properties>
 </project>
