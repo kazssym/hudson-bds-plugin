@@ -70,7 +70,7 @@
               <link>http://hudson-ci.org/javadoc/</link>
             </links>
             <detectLinks>true</detectLinks>
-            <excludePackageNames>org.vx68k.hudson.plugin.bds.resources</excludePackageNames>
+            <excludePackageNames>org.vx68k.hudson.plugin.bds.resources:org.vx68k.jenkins.plugin.bds.resources</excludePackageNames>
             <locale>en_US</locale>
           </configuration>
         </plugin>
