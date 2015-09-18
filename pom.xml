@@ -59,39 +59,6 @@
     <name>Nishimura Software Studio</name>
   </organization>
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.3</version>
-          <configuration>
-            <showWarnings>true</showWarnings>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
-          <configuration>
-            <links>
-              <link>http://hudson-ci.org/javadoc/</link>
-            </links>
-            <detectLinks>true</detectLinks>
-            <excludePackageNames>org.vx68k.hudson.plugin.bds.resources:org.vx68k.jenkins.plugin.bds.resources</excludePackageNames>
-            <locale>en_US</locale>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>3.0.0</version>
-          <configuration>
-            <xmlOutput>true</xmlOutput>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -119,8 +86,30 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <showWarnings>true</showWarnings>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
+        <configuration>
+          <links>
+            <link>http://hudson-ci.org/javadoc/</link>
+          </links>
+          <detectLinks>true</detectLinks>
+          <excludePackageNames>org.vx68k.hudson.plugin.bds.resources:org.vx68k.jenkins.plugin.bds.resources</excludePackageNames>
+          <locale>en_US</locale>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>findbugs</id>
@@ -129,6 +118,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
       </plugin>
     </plugins>
   </build>
