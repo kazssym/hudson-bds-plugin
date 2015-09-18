@@ -104,13 +104,12 @@ public class BDSInstallation extends ToolInstallation
      * initializes a RAD Studio Command Prompt.
      * For a remote node, a <code>type</code> command will be used to read the
      * file content.
-     *
      * @param build an {@link AbstractBuild} object
      * @param launcher a {@link Launcher} object
      * @param listener a {@link BuildListener} object
      * @return map of the environment variables
-     * @throws InterruptedException
-     * @throws IOException
+     * @throws IOException if an I/O error has occurred
+     * @throws InterruptedException if the thread was interrupted
      * @since 3.0
      */
     public Map<String, String> readVariables(AbstractBuild<?, ?> build,
@@ -133,11 +132,10 @@ public class BDSInstallation extends ToolInstallation
 
     /**
      * Read the RAD Studio environment variables from an input stream.
-     *
      * @param stream input stream from the batch file for initializing a RAD
      * Studio Command Prompt
      * @return map of the environment variables
-     * @throws IOException
+     * @throws IOException if an I/O error has occurred
      * @since 3.0
      */
     protected Map<String, String> readVariables(InputStream stream)

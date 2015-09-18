@@ -90,14 +90,13 @@ public class BDSUtilities {
     /**
      * Returns an input stream for a file.  For a remote file, a
      * <code>type</code> command will be executed to get the file content.
-     *
      * @param build {@link AbstractBuild} object
      * @param launcher {@link Launcher} object
      * @param listener {@link TaskListener} object
      * @param file {@link FilePath} object for a file
      * @return input stream from the file
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException if an I/O error has occurred
+     * @throws InterruptedException if the thread was interrupted
      */
     public static InputStream getInputStream(AbstractBuild<?, ?> build,
             Launcher launcher, TaskListener listener, FilePath file)
