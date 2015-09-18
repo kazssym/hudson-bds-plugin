@@ -41,7 +41,7 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.vx68k.hudson.plugin.bds.BDSUtilities;
-import org.vx68k.hudson.plugin.bds.resources.Messages;
+import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
  * Deprecated RAD Studio installation.  This class is retained for backward
