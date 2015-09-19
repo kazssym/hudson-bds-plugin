@@ -29,7 +29,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
- * Deprecated builder for RAD Studio projects and project groups.
+ * Deprecated RAD Studio builder.
  * This class is retained for backward compatibility.
  * @author Kaz Nishimura
  * @since 2.0
@@ -44,7 +44,7 @@ public class BDSBuilder extends Builder {
     private final String installationName;
 
     /**
-     * Constructs this object with property values.
+     * Constructs this instance with property values.
      * @param projectFile name of the MSBuild project file
      * @param switches command-line options for MSBuild
      * @param installationName name of the RAD Studio installation to use
@@ -84,7 +84,7 @@ public class BDSBuilder extends Builder {
     }
 
     /**
-     * Converts this object to
+     * Converts this instance to
      * {@link org.vx68k.hudson.plugin.bds.BDSBuilder}.
      * @return {@link org.vx68k.hudson.plugin.bds.BDSBuilder} instance
      * @since 4.0
@@ -139,7 +139,8 @@ public class BDSBuilder extends Builder {
             extends BuildStepDescriptor<Builder> {
 
         /**
-         * Returns <code>false</code> to make {@link BDSBuilder} invisible.
+         * Returns <code>false</code> to make the deprecated RAD Studio builder
+         * invisible.
          * @param type project type
          * @return <code>false</code>
          */
@@ -149,8 +150,8 @@ public class BDSBuilder extends Builder {
         }
 
         /**
-         * Returns the display name for {@link BDSBuilder}.
-         * @return display name for deprecated RAD Studio builders
+         * Returns the display name for the deprecated RAD Studio builder.
+         * @return display name
          */
         @Override
         public String getDisplayName() {

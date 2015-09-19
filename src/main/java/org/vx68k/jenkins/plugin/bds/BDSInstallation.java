@@ -76,7 +76,7 @@ public class BDSInstallation extends ToolInstallation
     }
 
     /**
-     * Returns a node-specific version of this instance.
+     * Returns a node-specific copy of this instance.
      * @param node node for which the return value is specialized.
      * @param listener a task listener
      * @return node-specific copy of this instance
@@ -92,7 +92,7 @@ public class BDSInstallation extends ToolInstallation
     }
 
     /**
-     * Returns an environment-specific version of this instance.
+     * Returns an environment-specific copy of this instance.
      * @param environment environment for which the return value is
      * specialized.
      * @return environment-specific copy of this instance
