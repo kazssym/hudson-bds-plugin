@@ -208,6 +208,10 @@ public class BDSInstallation extends ToolInstallation
                 for (int i = 0; i != installations.length; i += 1) {
                     installations[i] = deprecated[i].convert();
                 }
+
+                // Saves the migrated installations.
+                setInstallations(installations);
+                save();
             }
             return installations;
         }
