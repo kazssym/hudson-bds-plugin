@@ -64,6 +64,15 @@ public class BDSInstallation extends ToolInstallation
     }
 
     /**
+     * Returns the array of the deprecated RAD Studio installations.
+     * @return array of the deprecated RAD Studio installations
+     * @since 4.0
+     */
+    public static BDSInstallation[] getInstallations() {
+        return BDSInstallationDescriptor.getDescriptor().getInstallations();
+    }
+
+    /**
      * Converts this instance to
      * {@link org.vx68k.hudson.plugin.bds.BDSInstallation}.
      * @return converted {@link org.vx68k.hudson.plugin.bds.BDSInstallation}
@@ -114,30 +123,23 @@ public class BDSInstallation extends ToolInstallation
             extends ToolDescriptor<BDSInstallation> {
 
         /**
-         * Constructs this instance and loads the configured installations.
-         * In addition, if {@link
-         * org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor} has no
-         * installations, migrate all the installations of this instance.
+         * Constructs this instance by loading the saved installations.
          */
         public BDSInstallationDescriptor() {
             // {@link ToolDescriptor#installations} can be <code>null</code>
-            // when there is no configuration
+            // when there is no configuration.
             setInstallations();
             load();
+        }
 
-            Hudson application = Hudson.getInstance();
-            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor descriptor
-                    = application.getDescriptorByType(
-                            org.vx68k.hudson.plugin.bds.BDSInstallation.Descriptor.class);
-            if (descriptor.getInstallations().length == 0) {
-                    BDSInstallation[] installations = getInstallations();
-                org.vx68k.hudson.plugin.bds.BDSInstallation[] newInstallations
-                        = new org.vx68k.hudson.plugin.bds.BDSInstallation[installations.length];
-                for (int i = 0; i != installations.length; ++i) {
-                    newInstallations[i] = installations[i].convert();
-                }
-                descriptor.setInstallations(newInstallations);
-            }
+        /**
+         * Return the {@link BDSInstallationDescriptor} instance.
+         * @return {@link BDSInstallationDescriptor} instance
+         * @since 4.0
+         */
+        public static BDSInstallationDescriptor getDescriptor() {
+            return Hudson.getInstance().getDescriptorByType(
+                    BDSInstallationDescriptor.class);
         }
 
         /**

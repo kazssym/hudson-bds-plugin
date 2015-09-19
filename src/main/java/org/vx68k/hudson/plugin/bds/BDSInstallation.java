@@ -180,12 +180,12 @@ public class BDSInstallation extends ToolInstallation
             extends ToolDescriptor<BDSInstallation> {
 
         /**
-         * Constructs this object and loads configured installations.
+         * Constructs this object by loading the saved installations.
          */
         public Descriptor() {
             // {@link ToolDescriptor#installations} can be <code>null</code>
             // when there is no configuration.
-            setInstallations(new BDSInstallation[0]);
+            setInstallations();
             load();
         }
 
@@ -195,6 +195,21 @@ public class BDSInstallation extends ToolInstallation
          */
         public static Descriptor getDescriptor() {
             return Hudson.getInstance().getDescriptorByType(Descriptor.class);
+        }
+
+        @Override
+        public BDSInstallation[] getInstallations() {
+            BDSInstallation[] installations = super.getInstallations();
+            if (installations.length == 0) {
+                org.vx68k.jenkins.plugin.bds.BDSInstallation[] deprecated =
+                        org.vx68k.jenkins.plugin.bds.BDSInstallation
+                                .getInstallations();
+                installations = new BDSInstallation[deprecated.length];
+                for (int i = 0; i != installations.length; i += 1) {
+                    installations[i] = deprecated[i].convert();
+                }
+            }
+            return installations;
         }
 
         @Override
