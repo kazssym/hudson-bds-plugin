@@ -165,7 +165,7 @@ public class BDSInstallation extends ToolInstallation
          */
         @Override
         public String getDisplayName() {
-            return Messages.getDeprecated("RAD Studio");
+            return Messages.getInstallationDisplayName();
         }
     }
 }
