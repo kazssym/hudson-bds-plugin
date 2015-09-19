@@ -26,7 +26,7 @@ import hudson.util.XStream2;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.vx68k.hudson.plugin.bds.resources.Messages;
+import org.vx68k.jenkins.plugin.bds.resources.Messages;
 
 /**
  * Deprecated builder for RAD Studio projects and project groups.
