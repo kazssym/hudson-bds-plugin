@@ -199,19 +199,21 @@ public class BDSInstallation extends ToolInstallation
 
         @Override
         public BDSInstallation[] getInstallations() {
-            BDSInstallation[] installations = super.getInstallations();
-            if (installations.length == 0) {
-                org.vx68k.jenkins.plugin.bds.BDSInstallation[] deprecated =
-                        org.vx68k.jenkins.plugin.bds.BDSInstallation
-                                .getInstallations();
-                installations = new BDSInstallation[deprecated.length];
-                for (int i = 0; i != installations.length; i += 1) {
-                    installations[i] = deprecated[i].convert();
-                }
+            BDSInstallation[] installations;
+            synchronized (this) {
+                installations = super.getInstallations();
+                if (installations.length == 0) {
+                    org.vx68k.jenkins.plugin.bds.BDSInstallation[] olds =
+                            org.vx68k.jenkins.plugin.bds.BDSInstallation
+                                    .getInstallations();
+                    installations = new BDSInstallation[olds.length];
+                    for (int i = 0; i != installations.length; i += 1) {
+                        installations[i] = olds[i].convert();
+                    }
 
-                // Saves the migrated installations.
-                setInstallations(installations);
-                save();
+                    // Keeps the migrated installations without saving.
+                    setInstallations(installations);
+                }
             }
             return installations;
         }
